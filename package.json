@@ -1,28 +1,33 @@
 {
-  "name": "backend",
-  "version": "0.0.1",
-  "description": "Backend for AzaaS Platform",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node target/index.js",
-    "build+run": "tsc && node target/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AzaaS-Platform/backend.git"
-  },
-  "author": "Adam Stafiej, Maciej Stanuch, Konrad Sztenderski",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AzaaS-Platform/backend/issues"
-  },
-  "homepage": "https://github.com/AzaaS-Platform/backend#readme",
-  "devDependencies": {
-    "@types/node": "^13.7.2"
-  },
-  "dependencies": {
-    "aws-sdk": "^2.621.0",
-    "rxjs": "^6.5.4"
-  }
+    "name": "azaas-backend",
+    "version": "1.0.0",
+    "description": "AzaaS Serverless Backend",
+    "main": "handler.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "deploy": "npm install && npm run-script lint && sls deploy --verbose",
+        "invoke": "sls invoke local -f",
+        "lint": "eslint . --ext src/.js,.ts"
+    },
+    "dependencies": {
+        "source-map-support": "^0.5.10"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.45",
+        "@types/node": "^10.12.18",
+        "@typescript-eslint/eslint-plugin": "^2.21.0",
+        "@typescript-eslint/parser": "^2.21.0",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.10.0",
+        "eslint-plugin-prettier": "^3.1.2",
+        "fork-ts-checker-webpack-plugin": "^3.0.1",
+        "prettier": "^1.19.1",
+        "serverless-webpack": "^5.2.0",
+        "ts-loader": "^5.3.3",
+        "typescript": "^3.2.4",
+        "webpack": "^4.29.0",
+        "webpack-node-externals": "^1.7.2"
+    },
+    "author": "Maciej Stanuch, Adam Stafiej, Konrad Sztenderski",
+    "license": "ISC"
 }

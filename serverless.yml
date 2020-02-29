@@ -1,0 +1,35 @@
+service:
+    name: azaas-backend
+    description: 'AzaaS Backend Lambda service'
+
+custom:
+    webpack:
+        webpackConfig: ./webpack.config.js
+        includeModules: true
+
+plugins:
+    - serverless-webpack
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+    stage: dev
+    region: eu-central-1
+    apiGateway:
+        minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+    environment:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+functions:
+    hello:
+        handler: src/handler.hello
+        events:
+            - http:
+                  method: get
+                  path: hello
+    bye:
+        handler: src/handler.bye
+        events:
+            - http:
+                  method: get
+                  path: bye
