@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - AP-16/backend
 
 jobs:
   deploy-backend:
