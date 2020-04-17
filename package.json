@@ -10,9 +10,11 @@
         "lint": "eslint . --ext src/.js,.ts"
     },
     "dependencies": {
+        "uuid": "^7.0.3",
         "source-map-support": "^0.5.10"
     },
     "devDependencies": {
+        "@types/uuid": "^7.0.2",
         "@types/aws-lambda": "^8.10.45",
         "@types/node": "^10.12.18",
         "@typescript-eslint/eslint-plugin": "^2.21.0",
