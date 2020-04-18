@@ -1,0 +1,30 @@
+service:
+  name: azaas-backend-database
+  description: 'AzaaS Backend Database'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-central-1
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+resources:
+    Resources:
+        usersTable:
+            Type: AWS::DynamoDB::Table
+            DeletionPolicy: Retain
+            Properties:
+                TableName: users-groups
+                AttributeDefinitions:
+                    - AttributeName: entity
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: entity
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
