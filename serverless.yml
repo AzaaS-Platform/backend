@@ -44,3 +44,15 @@ functions:
             - http:
                   method: get
                   path: bye
+    getUser:
+        handler: src/handler.getUser
+        events:
+            - http:
+                method: get
+                path: getUser
+    getGroup:
+        handler: src/handler.getGroup
+        events:
+            - http:
+                  method: get
+                  path: getGroup
