@@ -1,14 +1,21 @@
-import {GroupService} from "../../src/service/GroupService";
-import {Group} from "../../src/type/Group";
-import DatabaseAccessor from "../../src/DatabaseAccessor";
+import {GroupService} from "../../../src/service/GroupService";
+import {Group} from "../../../src/type/Group";
+import {DatabaseAccessor} from "../../../src/DatabaseAccessor";
+import {DynamoDB} from 'aws-sdk'
 
 const CLIENT_HASH = "ac7c5306-e33c-4e1a-8643-875c1c7917d4";
 const GROUP_HASH = "16fc3362-5751-4eca-8478-69e1434cbbf8";
 const GROUP_ENTITY = `${CLIENT_HASH}:group:${GROUP_HASH}`;
 const INVALID_GROUP_HASH = "e031066d-e3ec-4aaf-b929-91051ac275a4";
 
-const GROUP_DATA = {id: GROUP_HASH, permissions: Array<String>("permission1, permission2")};
-const VALID_GROUP = new Group(GROUP_HASH, Array<String>("permission1, permission2"));
+const GROUP_DATA = {
+    entity: GROUP_HASH,
+    permissions: ({
+        type: 'String',
+        values: Array<String>("permission1", "permission2")
+    } as DynamoDB.DocumentClient.StringSet)
+};
+const VALID_GROUP = new Group(GROUP_HASH, Array<String>("permission1", "permission2"));
 
 test('group service returns group correctly ', async () => {
     // given
