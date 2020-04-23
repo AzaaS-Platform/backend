@@ -19,6 +19,17 @@ provider:
         minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
     environment:
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+              - dynamodb:DescribleTable
+          Resource: "*"
 
 functions:
     hello:
@@ -33,3 +44,15 @@ functions:
             - http:
                   method: get
                   path: bye
+    getUser:
+        handler: src/handler.getUser
+        events:
+            - http:
+                method: get
+                path: getUser
+    getGroup:
+        handler: src/handler.getGroup
+        events:
+            - http:
+                  method: get
+                  path: getGroup
