@@ -1,6 +1,7 @@
 import {DatabaseAccessor} from "../DatabaseAccessor";
 import {Group} from "../type/Group";
 import {DbMapping} from "../DbMapping";
+import {DynamoDB} from 'aws-sdk'
 
 export class GroupService {
     constructor(private databaseAccessor: DatabaseAccessor) {
@@ -10,7 +11,7 @@ export class GroupService {
         const map = await this.databaseAccessor.getEntityByKey(`${client}:group:${key}`);
 
         if (map != null) {
-            return new Group(map[DbMapping.id], map[DbMapping.permissions])
+            return new Group(map[DbMapping.id], (map[DbMapping.permissions] as DynamoDB.DocumentClient.StringSet).values)
         } else {
             return null
         }

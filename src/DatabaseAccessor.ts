@@ -25,5 +25,3 @@ export class DatabaseAccessor {
         return entity.substr(entity.lastIndexOf(':') + 1)
     }
 }
-
-export default DatabaseAccessor;
