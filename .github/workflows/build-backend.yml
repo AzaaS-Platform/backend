@@ -2,7 +2,8 @@ name: build-backend
 on:
     push:
         branches:
-            - !master
+            - '!master'
+            - '**'
 
 jobs:
     build-backend:
