@@ -1,8 +1,7 @@
-import {HttpError} from "./HttpError";
+import { HttpError } from './HttpError';
 
 export class BadRequest extends HttpError {
-
-    name = "Bad Request";
+    name = 'Bad Request';
 
     constructor(message: string) {
         super(400, message);

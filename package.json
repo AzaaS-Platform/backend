@@ -8,7 +8,8 @@
         "deploy": "sls deploy --verbose",
         "deploy-prod": "sls deploy --verbose -s prod",
         "invoke": "sls invoke local -f",
-        "lint": "eslint . --ext src/.js,.ts"
+        "lint-check": "eslint . --ext src/.js,.ts",
+        "lint": "eslint . --ext src/.js,.ts --fix"
     },
     "dependencies": {
         "source-map-support": "^0.5.10",

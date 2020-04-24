@@ -1,9 +1,9 @@
 export class Group {
-    constructor(id: String, permissions: Array<String>) {
+    constructor(id: string, permissions: Array<string>) {
         this.id = id;
         this.permissions = permissions;
     }
 
-    id: String;
-    permissions: Array<String>;
+    id: string;
+    permissions: Array<string>;
 }
