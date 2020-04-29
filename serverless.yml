@@ -58,3 +58,9 @@ functions:
             - http:
                   method: get
                   path: getGroup
+    roleGet:
+        handler: src/controllers/RoleController.get
+        events:
+            - http:
+                  method: get
+                  path: role/get
