@@ -35,25 +35,25 @@ provider:
 
 functions:
     hello:
-        handler: src/handler.hello
+        handler: src/controllers/handler.hello
         events:
             - http:
                   method: get
                   path: hello
     bye:
-        handler: src/handler.bye
+        handler: src/controllers/handler.bye
         events:
             - http:
                   method: get
                   path: bye
     getUser:
-        handler: src/handler.getUser
+        handler: src/controllers/handler.getUser
         events:
             - http:
                 method: get
                 path: getUser
     getGroup:
-        handler: src/handler.getGroup
+        handler: src/controllers/handler.getGroup
         events:
             - http:
                   method: get

@@ -19,7 +19,7 @@ test('database accessor reads pre-set group without permissions', async () => {
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = await databaseAccessor.getItemByKey(CLIENT_HASH, hash, 'group');
+    const actual = await databaseAccessor.getItemByKeys(CLIENT_HASH, hash, 'group');
 
     // then
     expect(actual).toEqual(expected);
@@ -40,7 +40,7 @@ test('database accessor reads pre-set group with one permission', async () => {
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = await databaseAccessor.getItemByKey(CLIENT_HASH, hash, 'group');
+    const actual = await databaseAccessor.getItemByKeys(CLIENT_HASH, hash, 'group');
 
     // then
     expect(actual).toEqual(expected);
@@ -61,7 +61,7 @@ test('database accessor reads pre-set group with multiple permissions', async ()
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = await databaseAccessor.getItemByKey(CLIENT_HASH, hash, 'group');
+    const actual = await databaseAccessor.getItemByKeys(CLIENT_HASH, hash, 'group');
 
     // then
     expect(actual).toEqual(expected);
@@ -82,7 +82,7 @@ test('database accessor reads pre-set user properly', async () => {
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = await databaseAccessor.getItemByKey(CLIENT_HASH, hash, 'user');
+    const actual = await databaseAccessor.getItemByKeys(CLIENT_HASH, hash, 'user');
 
     // then
     expect(actual).toEqual(expected);

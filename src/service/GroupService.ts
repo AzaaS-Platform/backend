@@ -1,21 +1,27 @@
-import { DatabaseAccessor } from '../DatabaseAccessor';
+import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { Group } from '../type/Group';
-import { DbMapping } from '../DbMapping';
+import { DbMappingConstants } from '../database/DbMappingConstants';
 import { DynamoDB } from 'aws-sdk';
+import { DbItem } from '../database/DbItem';
 
 export class GroupService {
     constructor(private databaseAccessor: DatabaseAccessor) {}
 
     async getGroupByKey(client: string, key: string): Promise<Group | null> {
-        const map = await this.databaseAccessor.getEntityByKey(`${client}:group:${key}`);
+        const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
 
-        if (map != null) {
-            return new Group(
-                map[DbMapping.id],
-                (map[DbMapping.permissions] as DynamoDB.DocumentClient.StringSet).values,
-            );
+        if (item != null) {
+            return new Group(item.get(DbMappingConstants.ENTITY), GroupService.getPermissionsArray(item));
         } else {
             return null;
+        }
+    }
+
+    private static getPermissionsArray(item: DbItem): Array<string> {
+        if (!item.has(DbMappingConstants.PERMISSIONS)) {
+            return new Array<string>();
+        } else {
+            return (item.get(DbMappingConstants.PERMISSIONS) as DynamoDB.DocumentClient.StringSet).values;
         }
     }
 }
