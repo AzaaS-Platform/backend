@@ -23,6 +23,21 @@ export class DatabaseAccessor {
         } else return null;
     }
 
+    public async getItemsPartitionKey(partitionKey: string, entryType: string): Promise<Array<DbItem> | null> {
+        const keyConditionExpression = `${DB.CLIENT} = ${DB.CLIENT_VALUE}`;
+        const expressionAttributeValues: { [key: string]: { [key: string]: string } } = {};
+        expressionAttributeValues[DB.CLIENT_VALUE] = { S: `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}` };
+
+        const response = await this.DYNAMO_DB.query({
+            TableName: DatabaseAccessor.determineTable(),
+            KeyConditionExpression: keyConditionExpression,
+            ExpressionAttributeValues: expressionAttributeValues,
+        }).promise();
+        if (response.Items != undefined) {
+            return response.Items.map(it => new DbItem(it));
+        } else return null;
+    }
+
     private static determineTable(): string {
         const stage = process.env.STAGE;
         if (stage != undefined) {

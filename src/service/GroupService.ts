@@ -17,6 +17,18 @@ export class GroupService {
         }
     }
 
+    async getAllGroups(client: string): Promise<Array<Group>> {
+        const item = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
+
+        if (item != null) {
+            return item.map(it => {
+                return new Group(it.get(DbMappingConstants.ENTITY), GroupService.getPermissionsArray(it));
+            });
+        } else {
+            return new Array<Group>();
+        }
+    }
+
     private static getPermissionsArray(item: DbItem): Array<string> {
         if (!item.has(DbMappingConstants.PERMISSIONS)) {
             return new Array<string>();

@@ -23,3 +23,17 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         return RequestUtils.handleError(e);
     }
 };
+
+export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+
+        const map = RequestUtils.extractQueryStringParameters(event, [RequestParameterConstants.CLIENT]);
+
+        const groups = groupService.getAllGroups(map.get(RequestParameterConstants.CLIENT) as string);
+        return RequestUtils.buildResponse(JSON.stringify(groups));
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};

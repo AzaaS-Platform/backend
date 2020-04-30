@@ -64,3 +64,9 @@ functions:
             - http:
                   method: get
                   path: role/get
+    roleGetAll:
+        handler: src/controllers/RoleController.getAll
+        events:
+            - http:
+                  method: get
+                  path: role/getAll
