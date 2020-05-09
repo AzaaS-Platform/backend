@@ -11,7 +11,7 @@ export class GroupService {
         const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
 
         if (item != null) {
-            return new Group(item.get(DbMappingConstants.ENTITY), GroupService.getPermissionsArray(item));
+            return Group.fromDbItem(item);
         } else {
             return null;
         }
@@ -22,7 +22,7 @@ export class GroupService {
 
         if (item != null) {
             return item.map(it => {
-                return new Group(it.get(DbMappingConstants.ENTITY), GroupService.getPermissionsArray(it));
+                return Group.fromDbItem(it);
             });
         } else {
             return new Array<Group>();

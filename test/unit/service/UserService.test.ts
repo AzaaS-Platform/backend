@@ -19,7 +19,7 @@ const GROUP_1_DATA = new DbItem({
         wrapperName: 'Set',
     } as DynamoDB.DocumentClient.StringSet,
 });
-const GROUP_1 = new Group(GROUP_1_HASH, Array<string>('permission1'));
+const GROUP_1 = new Group(CLIENT_HASH, GROUP_1_HASH, Array<string>('permission1'));
 
 const GROUP_2_HASH = '44c96464-a7b9-4784-9437-692346893905';
 const GROUP_2_DATA = new DbItem({
@@ -31,14 +31,14 @@ const GROUP_2_DATA = new DbItem({
         wrapperName: 'Set',
     } as DynamoDB.DocumentClient.StringSet,
 });
-const GROUP_2 = new Group(GROUP_2_HASH, Array<string>('permission2', 'permission3'));
+const GROUP_2 = new Group(CLIENT_HASH, GROUP_2_HASH, Array<string>('permission2', 'permission3'));
 
 const EMPTY_USER_HASH = 'b9c9ce4e-3df0-4b7b-9f25-df86e12e574b';
 const EMPTY_USER_DATA = new DbItem({
     client: CLIENT_HASH,
     entity: EMPTY_USER_HASH,
 });
-const EMPTY_USER = new User(EMPTY_USER_HASH, Array<Group>());
+const EMPTY_USER = new User(CLIENT_HASH, EMPTY_USER_HASH, Array<string>(), Array<Group>());
 
 const MULTIPLE_USER_HASH = '3c83b316-3904-498b-a5e6-e1c6c7b217d6';
 const MULTIPLE_USER_DATA = new DbItem({
@@ -50,7 +50,12 @@ const MULTIPLE_USER_DATA = new DbItem({
         wrapperName: 'Set',
     } as DynamoDB.DocumentClient.StringSet,
 });
-const MULTIPLE_USER = new User(MULTIPLE_USER_HASH, Array<Group>(GROUP_1, GROUP_2));
+const MULTIPLE_USER = new User(
+    CLIENT_HASH,
+    MULTIPLE_USER_HASH,
+    Array<string>(GROUP_1_HASH, GROUP_2_HASH),
+    Array<Group>(GROUP_1, GROUP_2),
+);
 
 const NON_EXISTING_GROUP_HASH = '7430e23f-1612-496c-a2cc-b0719f76850a';
 const BROKEN_USER_HASH = '61db4f42-08ff-4ba6-ba20-79d4010097cf';

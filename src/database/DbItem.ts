@@ -22,6 +22,10 @@ export class DbItem {
         return this.item[key] !== undefined;
     }
 
+    public getMap(): { [key: string]: any } {
+        return this.item;
+    }
+
     private snapOnSeparator(): void {
         const separator = (this.item[DbMappingConstants.CLIENT] as string).lastIndexOf(
             DbMappingConstants.TYPE_SEPARATOR,

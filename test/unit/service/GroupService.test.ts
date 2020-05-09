@@ -11,7 +11,7 @@ const EMPTY_GROUP_DATA = new DbItem({
     client: CLIENT_HASH,
     entity: EMPTY_GROUP_HASH,
 });
-const EMPTY_GROUP = new Group(EMPTY_GROUP_HASH, Array<string>());
+const EMPTY_GROUP = new Group(CLIENT_HASH, EMPTY_GROUP_HASH, Array<string>());
 
 const ONE_GROUP_HASH = '92663fc0-b18b-4c99-ad26-f130cc01014b';
 const ONE_GROUP_DATA = new DbItem({
@@ -23,7 +23,7 @@ const ONE_GROUP_DATA = new DbItem({
         wrapperName: 'Set',
     } as DynamoDB.DocumentClient.StringSet,
 });
-const ONE_GROUP = new Group(ONE_GROUP_HASH, Array<string>('permission1'));
+const ONE_GROUP = new Group(CLIENT_HASH, ONE_GROUP_HASH, Array<string>('permission1'));
 
 const MULTIPLE_GROUP_HASH = 'b36f3d80-6217-47ef-954c-efc1d4073646';
 const MULTIPLE_GROUP_DATA = new DbItem({
@@ -35,7 +35,7 @@ const MULTIPLE_GROUP_DATA = new DbItem({
         wrapperName: 'Set',
     } as DynamoDB.DocumentClient.StringSet,
 });
-const MULTIPLE_GROUP = new Group(MULTIPLE_GROUP_HASH, Array<string>('permission1', 'permission2'));
+const MULTIPLE_GROUP = new Group(CLIENT_HASH, MULTIPLE_GROUP_HASH, Array<string>('permission1', 'permission2'));
 
 const INVALID_GROUP_HASH = 'e031066d-e3ec-4aaf-b929-91051ac275a4';
 
