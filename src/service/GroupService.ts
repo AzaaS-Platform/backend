@@ -1,8 +1,7 @@
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { Group } from '../type/Group';
-import { DbMappingConstants } from '../database/DbMappingConstants';
-import { DynamoDB } from 'aws-sdk';
-import { DbItem } from '../database/DbItem';
+import {BadRequest} from "../error/BadRequest";
+import {InternalServerError} from "../error/InternalServerError";
 
 export class GroupService {
     constructor(private databaseAccessor: DatabaseAccessor) {}
@@ -29,11 +28,21 @@ export class GroupService {
         }
     }
 
-    private static getPermissionsArray(item: DbItem): Array<string> {
-        if (!item.has(DbMappingConstants.PERMISSIONS)) {
-            return new Array<string>();
-        } else {
-            return (item.get(DbMappingConstants.PERMISSIONS) as DynamoDB.DocumentClient.StringSet).values;
+    async addGroup(group: Group): Promise<void> {
+        try {
+            return await this.databaseAccessor.put(group.toDbItem(), false);
+        } catch (e) {
+            if (e.message === 'The conditional request failed') throw new BadRequest('cannot overwrite item');
+            else throw new InternalServerError(e.message);
+        }
+    }
+
+    async modifyGroup(group: Group): Promise<void> {
+        try {
+            return await this.databaseAccessor.put(group.toDbItem(), true);
+        } catch (e) {
+            if (e.message === 'The conditional request failed') throw new BadRequest('item does not exist');
+            else throw new InternalServerError(e.message);
         }
     }
 }

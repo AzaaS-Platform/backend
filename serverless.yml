@@ -58,15 +58,27 @@ functions:
             - http:
                   method: get
                   path: getGroup
-    roleGet:
-        handler: src/controllers/RoleController.get
+    groupGet:
+        handler: src/controllers/GroupController.get
         events:
             - http:
                   method: get
-                  path: role/get
-    roleGetAll:
-        handler: src/controllers/RoleController.getAll
+                  path: group/get
+    groupGetAll:
+        handler: src/controllers/GroupController.getAll
         events:
             - http:
                   method: get
-                  path: role/getAll
+                  path: group/getAll
+    groupAdd:
+        handler: src/controllers/GroupController.add
+        events:
+            - http:
+                  method: post
+                  path: group/add
+    groupModify:
+        handler: src/controllers/GroupController.modify
+        events:
+            - http:
+                  method: post
+                  path: group/modify

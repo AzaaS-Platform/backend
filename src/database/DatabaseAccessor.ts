@@ -38,6 +38,25 @@ export class DatabaseAccessor {
         } else return null;
     }
 
+    public async put(item: DbItem, overwrite: boolean): Promise<void> {
+        let conditionExpression: string;
+        if (overwrite){
+            conditionExpression = `attribute_exists(${DB.CLIENT})`;
+        } else {
+            conditionExpression = `attribute_not_exists(${DB.CLIENT})`;
+        }
+        const response = await this.DYNAMO_DB.put({
+            TableName: DatabaseAccessor.determineTable(),
+            Item: item.getMap(),
+            ConditionExpression: conditionExpression,
+        }).promise();
+        if (response.$response.error) {
+            throw new InternalServerError("request to DynamoDB failed");
+        } else {
+            return;
+        }
+    }
+
     private static determineTable(): string {
         const stage = process.env.STAGE;
         if (stage != undefined) {
