@@ -40,7 +40,7 @@ export class DatabaseAccessor {
 
     public async put(item: DbItem, overwrite: boolean): Promise<void> {
         let conditionExpression: string;
-        if (overwrite){
+        if (overwrite) {
             conditionExpression = `attribute_exists(${DB.CLIENT})`;
         } else {
             conditionExpression = `attribute_not_exists(${DB.CLIENT})`;
@@ -51,7 +51,7 @@ export class DatabaseAccessor {
             ConditionExpression: conditionExpression,
         }).promise();
         if (response.$response.error) {
-            throw new InternalServerError("request to DynamoDB failed");
+            throw new InternalServerError('request to DynamoDB failed');
         } else {
             return;
         }

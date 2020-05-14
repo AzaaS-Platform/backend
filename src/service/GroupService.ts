@@ -1,7 +1,7 @@
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { Group } from '../type/Group';
-import {BadRequest} from "../error/BadRequest";
-import {InternalServerError} from "../error/InternalServerError";
+import { BadRequest } from '../error/BadRequest';
+import { InternalServerError } from '../error/InternalServerError';
 
 export class GroupService {
     constructor(private databaseAccessor: DatabaseAccessor) {}
