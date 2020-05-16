@@ -13,12 +13,14 @@ plugins:
 provider:
     name: aws
     runtime: nodejs12.x
-    stage: dev
+    stage: ${opt:stage, 'dev'}
     region: eu-central-1
     apiGateway:
         minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
     environment:
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+        STAGE: ${self:provider.stage}
+        REGION: ${self:provider.region}
     iamRoleStatements:
         - Effect: Allow
           Action:
@@ -33,26 +35,50 @@ provider:
 
 functions:
     hello:
-        handler: src/handler.hello
+        handler: src/controllers/handler.hello
         events:
             - http:
                   method: get
                   path: hello
     bye:
-        handler: src/handler.bye
+        handler: src/controllers/handler.bye
         events:
             - http:
                   method: get
                   path: bye
     getUser:
-        handler: src/handler.getUser
+        handler: src/controllers/handler.getUser
         events:
             - http:
                 method: get
                 path: getUser
     getGroup:
-        handler: src/handler.getGroup
+        handler: src/controllers/handler.getGroup
         events:
             - http:
                   method: get
                   path: getGroup
+    groupGet:
+        handler: src/controllers/GroupController.get
+        events:
+            - http:
+                  method: get
+                  path: group/get
+    groupGetAll:
+        handler: src/controllers/GroupController.getAll
+        events:
+            - http:
+                  method: get
+                  path: group/getAll
+    groupAdd:
+        handler: src/controllers/GroupController.add
+        events:
+            - http:
+                  method: post
+                  path: group/add
+    groupModify:
+        handler: src/controllers/GroupController.modify
+        events:
+            - http:
+                  method: post
+                  path: group/modify

@@ -1,31 +1,16 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import { UserService } from './service/UserService';
-import { DatabaseAccessor } from './DatabaseAccessor';
-import { GroupService } from './service/GroupService';
-import { HttpError } from './error/HttpError';
-import { BadRequest } from './error/BadRequest';
-
-function buildResponse(message: string): APIGatewayProxyResult {
-    return {
-        statusCode: 200,
-        body: message,
-    };
-}
-
-function handleError(error: Error): APIGatewayProxyResult {
-    const code = (error as HttpError).code ?? 500;
-    return {
-        statusCode: code,
-        body: `${error.stack}`,
-    };
-}
+import { UserService } from '../service/UserService';
+import { DatabaseAccessor } from '../database/DatabaseAccessor';
+import { GroupService } from '../service/GroupService';
+import { BadRequest } from '../error/BadRequest';
+import { RequestUtils } from './RequestUtils';
 
 export const hello: APIGatewayProxyHandler = async (_, _context): Promise<APIGatewayProxyResult> => {
-    return buildResponse('Hello world!');
+    return RequestUtils.buildResponse('Hello world!');
 };
 
 export const bye: APIGatewayProxyHandler = async (_, _context): Promise<APIGatewayProxyResult> => {
-    return buildResponse('Bye!');
+    return RequestUtils.buildResponse('Bye!');
 };
 
 export const getUser: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
@@ -39,10 +24,10 @@ export const getUser: APIGatewayProxyHandler = async (event, _context): Promise<
                 event.queryStringParameters['client'],
                 event.queryStringParameters['id'],
             );
-            return buildResponse(JSON.stringify(user));
+            return RequestUtils.buildResponse(JSON.stringify(user));
         } else throw new BadRequest('empty query paremeters');
     } catch (e) {
-        return handleError(e);
+        return RequestUtils.handleError(e);
     }
 };
 
@@ -56,9 +41,9 @@ export const getGroup: APIGatewayProxyHandler = async (event, _context): Promise
                 event.queryStringParameters['client'],
                 event.queryStringParameters['id'],
             );
-            return buildResponse(JSON.stringify(group));
+            return RequestUtils.buildResponse(JSON.stringify(group));
         } else throw new BadRequest('empty query paremeters');
     } catch (e) {
-        return handleError(e);
+        return RequestUtils.handleError(e);
     }
 };

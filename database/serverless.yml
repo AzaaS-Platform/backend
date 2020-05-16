@@ -5,7 +5,7 @@ service:
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: eu-central-1
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
@@ -16,15 +16,18 @@ resources:
     Resources:
         usersTable:
             Type: AWS::DynamoDB::Table
-            DeletionPolicy: Retain
             Properties:
-                TableName: users-groups
+                TableName: users-groups-${self:provider.stage}
                 AttributeDefinitions:
+                    - AttributeName: client
+                      AttributeType: S
                     - AttributeName: entity
                       AttributeType: S
                 KeySchema:
-                    - AttributeName: entity
+                    - AttributeName: client
                       KeyType: HASH
+                    - AttributeName: entity
+                      KeyType: RANGE
                 ProvisionedThroughput:
                     ReadCapacityUnits: 1
                     WriteCapacityUnits: 1
