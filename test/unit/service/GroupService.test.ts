@@ -1,10 +1,9 @@
-import {GroupService} from '../../../src/service/GroupService';
-import {Group} from '../../../src/type/Group';
-import {DatabaseAccessor} from '../../../src/database/DatabaseAccessor';
-import {DynamoDB} from 'aws-sdk';
-import {DbItem} from '../../../src/database/DbItem';
-import {BadRequest} from "../../../src/error/BadRequest";
-
+import { GroupService } from '../../../src/service/GroupService';
+import { Group } from '../../../src/type/Group';
+import { DatabaseAccessor } from '../../../src/database/DatabaseAccessor';
+import { DynamoDB } from 'aws-sdk';
+import { DbItem } from '../../../src/database/DbItem';
+import { BadRequest } from '../../../src/error/BadRequest';
 
 const CLIENT_HASH = 'ac7c5306-e33c-4e1a-8643-875c1c7917d4';
 
@@ -56,10 +55,7 @@ const MOCK_GET_ITEM_BY_KEY = async (
 const MULTIPLE_GROUP_ITEMS = new Array<Group>(EMPTY_GROUP, ONE_GROUP, MULTIPLE_GROUP);
 const MULTIPLE_GROUP_DATA_ITEMS = new Array<DbItem>(EMPTY_GROUP_DATA, ONE_GROUP_DATA, MULTIPLE_GROUP_DATA);
 
-const MOCK_GET_ITEMS_PARTITION_KEY = async (
-    partitionKey: string,
-    entryType: string,
-): Promise<Array<DbItem> | null> => {
+const MOCK_GET_ITEMS_PARTITION_KEY = async (partitionKey: string, entryType: string): Promise<Array<DbItem> | null> => {
     if (partitionKey === CLIENT_HASH && entryType === 'group') return MULTIPLE_GROUP_DATA_ITEMS;
     return null;
 };
@@ -157,13 +153,12 @@ test('group service cannot add role because it already exists', async () => {
     await expect(actual).rejects.toEqual(BAD_REQUEST_CANNOT_OVERWRITE);
 });
 
-
-test('group service cannot edit role because it doesn\'t exists', async () => {
+test("group service cannot edit role because it doesn't exists", async () => {
     //given
     const databaseAccessor = new DatabaseAccessor();
     const groupService = new GroupService(databaseAccessor);
 
-    databaseAccessor.put = async () => {
+    databaseAccessor.put = async (): Promise<void> => {
         throw ERROR_CONDITIONAL_REQUEST_FAILED;
     };
 
