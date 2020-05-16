@@ -9,7 +9,8 @@
         "strict": true,
         "experimentalDecorators": true,
         "target": "es2017",
-        "outDir": "lib"
+        "outDir": "lib",
+        "esModuleInterop":true
     },
     "include": ["./**/*.ts"],
     "exclude": ["node_modules/**/*", ".serverless/**/*", ".webpack/**/*", "_warmup/**/*", ".vscode/**/*"]
