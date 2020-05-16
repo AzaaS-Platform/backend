@@ -25,8 +25,8 @@ export class DatabaseAccessor {
 
     public async getItemsPartitionKey(partitionKey: string, entryType: string): Promise<Array<DbItem> | null> {
         const keyConditionExpression = `${DB.CLIENT} = ${DB.CLIENT_VALUE}`;
-        const expressionAttributeValues: { [key: string]: { [key: string]: string } } = {};
-        expressionAttributeValues[DB.CLIENT_VALUE] = { S: `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}` };
+        const expressionAttributeValues: { [key: string]: string } = {};
+        expressionAttributeValues[DB.CLIENT_VALUE] = `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}`;
 
         const response = await this.DYNAMO_DB.query({
             TableName: DatabaseAccessor.determineTable(),

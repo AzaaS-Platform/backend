@@ -26,12 +26,11 @@ export class RequestUtils {
                 throw new BadRequest('no query parameters passed');
             } else {
                 if (event.queryStringParameters[it]) {
-                    parameters.set(it, 'string');
+                    parameters.set(it, event.queryStringParameters[it]);
                 } else {
                     throw new BadRequest(`parameter ${it} is required`);
                 }
             }
-            parameters.set(it, 'string');
         });
         return parameters;
     }
