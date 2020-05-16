@@ -7,24 +7,31 @@ export class GroupService {
     constructor(private databaseAccessor: DatabaseAccessor) {}
 
     async getGroupByKey(client: string, key: string): Promise<Group | null> {
-        const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
+        try {
+            const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
 
-        if (item != null) {
-            return Group.fromDbItem(item);
-        } else {
-            return null;
+            if (item != null) {
+                return Group.fromDbItem(item);
+            } else {
+                return null;
+            }
+        } catch (e) {
+            throw new InternalServerError(e.message);
         }
     }
 
     async getAllGroups(client: string): Promise<Array<Group>> {
-        const item = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
-
-        if (item != null) {
-            return item.map(it => {
-                return Group.fromDbItem(it);
-            });
-        } else {
-            return new Array<Group>();
+        try {
+            const items = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
+            if (items != null) {
+                return items.map(it => {
+                    return Group.fromDbItem(it);
+                });
+            } else {
+                return new Array<Group>();
+            }
+        } catch (e) {
+            throw new InternalServerError(e.message);
         }
     }
 

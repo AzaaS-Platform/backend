@@ -16,7 +16,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
             RequestParameterConstants.ID,
         ]);
 
-        const group = groupService.getGroupByKey(
+        const group = await groupService.getGroupByKey(
             map.get(RequestParameterConstants.CLIENT) as string,
             map.get(RequestParameterConstants.ID) as string,
         );
@@ -33,7 +33,7 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         const map = RequestUtils.extractQueryStringParameters(event, [RequestParameterConstants.CLIENT]);
 
-        const groups = groupService.getAllGroups(map.get(RequestParameterConstants.CLIENT) as string);
+        const groups = await groupService.getAllGroups(map.get(RequestParameterConstants.CLIENT) as string);
         return RequestUtils.buildResponse(JSON.stringify(groups));
     } catch (e) {
         return RequestUtils.handleError(e);
@@ -48,7 +48,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         if (event.body === null) {
             throw new BadRequest('no body passed');
         }
-        const item = Group.fromObject(JSON.parse(event.body));
+        const item = await Group.fromObject(JSON.parse(event.body));
         await groupService.addGroup(item);
         return RequestUtils.buildResponse('ok');
     } catch (e) {
@@ -64,7 +64,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         if (event.body === null) {
             throw new BadRequest('no body passed');
         }
-        const item = Group.fromObject(JSON.parse(event.body));
+        const item = await Group.fromObject(JSON.parse(event.body));
         await groupService.modifyGroup(item);
         return RequestUtils.buildResponse('ok');
     } catch (e) {
