@@ -18,6 +18,7 @@ export class DatabaseAccessor {
             TableName: DatabaseAccessor.determineTable(),
             Key: searchKey,
         }).promise();
+
         if (response.Item != undefined) {
             return new DbItem(response.Item);
         } else return null;
@@ -25,14 +26,15 @@ export class DatabaseAccessor {
 
     public async getItemsPartitionKey(partitionKey: string, entryType: string): Promise<Array<DbItem> | null> {
         const keyConditionExpression = `${DB.CLIENT} = ${DB.CLIENT_VALUE}`;
-        const expressionAttributeValues: { [key: string]: { [key: string]: string } } = {};
-        expressionAttributeValues[DB.CLIENT_VALUE] = { S: `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}` };
+        const expressionAttributeValues: { [key: string]: string } = {};
+        expressionAttributeValues[DB.CLIENT_VALUE] = `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}`;
 
         const response = await this.DYNAMO_DB.query({
             TableName: DatabaseAccessor.determineTable(),
             KeyConditionExpression: keyConditionExpression,
             ExpressionAttributeValues: expressionAttributeValues,
         }).promise();
+
         if (response.Items != undefined) {
             return response.Items.map(it => new DbItem(it));
         } else return null;
@@ -50,6 +52,7 @@ export class DatabaseAccessor {
             Item: item.getMap(),
             ConditionExpression: conditionExpression,
         }).promise();
+
         if (response.$response.error) {
             throw new InternalServerError('request to DynamoDB failed');
         } else {

@@ -3,6 +3,8 @@ import {Group} from '../../../src/type/Group';
 import {DatabaseAccessor} from '../../../src/database/DatabaseAccessor';
 import {DynamoDB} from 'aws-sdk';
 import {DbItem} from '../../../src/database/DbItem';
+import {BadRequest} from "../../../src/error/BadRequest";
+
 
 const CLIENT_HASH = 'ac7c5306-e33c-4e1a-8643-875c1c7917d4';
 
@@ -61,6 +63,10 @@ const MOCK_GET_ITEMS_PARTITION_KEY = async (
     if (partitionKey === CLIENT_HASH && entryType === 'group') return MULTIPLE_GROUP_DATA_ITEMS;
     return null;
 };
+
+const BAD_REQUEST_CANNOT_OVERWRITE = new BadRequest('cannot overwrite item');
+const BAD_REQUEST_ITEM_DOES_NOT_EXIST = new BadRequest('item does not exist');
+const ERROR_CONDITIONAL_REQUEST_FAILED = new Error('The conditional request failed');
 
 beforeEach(() => {
     process.env.STAGE = 'test';
@@ -134,5 +140,36 @@ test('group service returns all groups', async () => {
     const actual = await groupService.getAllGroups(CLIENT_HASH);
 
     //then
-    expect(actual).toStrictEqual(MULTIPLE_GROUP_ITEMS);
+    expect(actual).toEqual(MULTIPLE_GROUP_ITEMS);
+});
+
+test('group service cannot add role because it already exists', async () => {
+    //given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+
+    databaseAccessor.getItemByKeys = MOCK_GET_ITEM_BY_KEY;
+
+    //when
+    const actual = groupService.addGroup(ONE_GROUP);
+
+    //then
+    await expect(actual).rejects.toEqual(BAD_REQUEST_CANNOT_OVERWRITE);
+});
+
+
+test('group service cannot edit role because it doesn\'t exists', async () => {
+    //given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+
+    databaseAccessor.put = async () => {
+        throw ERROR_CONDITIONAL_REQUEST_FAILED;
+    };
+
+    //when
+    const actual = groupService.modifyGroup(ONE_GROUP);
+
+    //then
+    await expect(actual).rejects.toEqual(BAD_REQUEST_ITEM_DOES_NOT_EXIST);
 });

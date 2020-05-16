@@ -1,6 +1,6 @@
-import { DatabaseAccessor } from '../../src/database/DatabaseAccessor';
-import { DynamoDB } from 'aws-sdk';
-import { DbItem } from '../../src/database/DbItem';
+import {DatabaseAccessor} from '../../src/database/DatabaseAccessor';
+import {DynamoDB} from 'aws-sdk';
+import {DbItem} from '../../src/database/DbItem';
 
 const CLIENT_HASH = '232fe104-13e8-4fb7-8d01-d3cdf37d3b6b';
 
@@ -87,3 +87,46 @@ test('database accessor reads pre-set user properly', async () => {
     // then
     expect(actual).toEqual(expected);
 });
+
+
+test('database accessor reads all pre-set items', async () => {
+    //given
+    const hash_empty_group = '145164d9-4904-4cc8-b73c-def9a7906546';
+    const hash_one_group = '3a1bfcd6-2a5e-44e4-89c4-c13abe869b8b';
+    const hash_multiple_group = 'c5c16cc5-c79e-42f9-beef-2e7f7ec5585d';
+
+    const empty_group = new DbItem({
+        client: CLIENT_HASH,
+        entity: hash_empty_group,
+    });
+
+    const one_group = new DbItem({
+        client: CLIENT_HASH,
+        entity: hash_one_group,
+        permissions: {
+            type: 'String',
+            values: Array<string>('permission1'),
+            wrapperName: 'Set',
+        } as DynamoDB.DocumentClient.StringSet,
+    });
+
+    const multiple_group = new DbItem({
+        client: CLIENT_HASH,
+        entity: hash_multiple_group,
+        permissions: {
+            type: 'String',
+            values: Array<string>('permission1', 'permission2'),
+            wrapperName: 'Set',
+        } as DynamoDB.DocumentClient.StringSet,
+    });
+
+    const expected = new Array<DbItem>(empty_group, one_group, multiple_group);
+    const databaseAccessor = new DatabaseAccessor();
+
+    //when
+    const actual = await databaseAccessor.getItemsPartitionKey(CLIENT_HASH, 'group');
+
+    //then
+    expect(actual).toEqual(expected);
+});
+
