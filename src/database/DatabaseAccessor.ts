@@ -18,6 +18,7 @@ export class DatabaseAccessor {
             TableName: DatabaseAccessor.determineTable(),
             Key: searchKey,
         }).promise();
+
         if (response.Item != undefined) {
             return new DbItem(response.Item);
         } else return null;
@@ -33,6 +34,7 @@ export class DatabaseAccessor {
             KeyConditionExpression: keyConditionExpression,
             ExpressionAttributeValues: expressionAttributeValues,
         }).promise();
+
         if (response.Items != undefined) {
             return response.Items.map(it => new DbItem(it));
         } else return null;
@@ -50,6 +52,7 @@ export class DatabaseAccessor {
             Item: item.getMap(),
             ConditionExpression: conditionExpression,
         }).promise();
+
         if (response.$response.error) {
             throw new InternalServerError('request to DynamoDB failed');
         } else {
