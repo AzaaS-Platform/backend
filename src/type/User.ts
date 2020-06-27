@@ -18,14 +18,14 @@ export class User {
 
     public toDbItem(): DbItem {
         const mapping: { [key: string]: any } = {};
-        mapping[DB.CLIENT] = this.client;
+        mapping[DB.CLIENT] = this.client + DB.USER_TYPE_SUFFIX;
         mapping[DB.ENTITY] = this.entity;
         mapping[DB.PERMISSIONS] = this.groups;
         return new DbItem(mapping);
     }
 
     static fromDbItem(item: DbItem): User {
-        return new User(item.get(DB.CLIENT), item.get(DB.ENTITY), User.getGroupsArray(item));
+        return new User(item.get(DB.CLIENT.split(':')[0]), item.get(DB.ENTITY), User.getGroupsArray(item));
     }
 
     public populateGroups(groups: Array<Group>): void {

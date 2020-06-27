@@ -8,4 +8,7 @@ export class DbMappingConstants {
     public static ENTITY_VALUE = ':entity';
 
     public static TYPE_SEPARATOR = ':';
+
+    public static GROUP_TYPE_SUFFIX = ':group';
+    public static USER_TYPE_SUFFIX = ':user';
 }

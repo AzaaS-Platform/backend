@@ -168,3 +168,19 @@ test("group service cannot edit role because it doesn't exists", async () => {
     //then
     await expect(actual).rejects.toEqual(BAD_REQUEST_ITEM_DOES_NOT_EXIST);
 });
+
+test("group service can't remove role because it doesn't exists", async () => {
+    //given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+
+    databaseAccessor.delete = async (): Promise<void> => {
+        throw ERROR_CONDITIONAL_REQUEST_FAILED;
+    };
+
+    //when
+    const actual = groupService.deleteGroup(ONE_GROUP);
+
+    //then
+    await expect(actual).rejects.toEqual(BAD_REQUEST_ITEM_DOES_NOT_EXIST);
+});

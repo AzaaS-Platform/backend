@@ -60,6 +60,22 @@ export class DatabaseAccessor {
         }
     }
 
+    public async delete(item: DbItem): Promise<void> {
+        const response = await this.DYNAMO_DB.delete({
+            TableName: DatabaseAccessor.determineTable(),
+            Key: {
+                client: item.get('client'),
+                entity: item.get('entity'),
+            },
+        }).promise();
+
+        if (response.$response.error) {
+            throw new InternalServerError('request to DynamoDB failed');
+        } else {
+            return;
+        }
+    }
+
     private static determineTable(): string {
         const stage = process.env.STAGE;
         if (stage != undefined) {

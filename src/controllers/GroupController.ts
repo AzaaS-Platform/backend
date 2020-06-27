@@ -71,3 +71,19 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         return RequestUtils.handleError(e);
     }
 };
+
+export const remove: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+
+        if (event.body === null) {
+            throw new BadRequest('no body passed');
+        }
+        const item = await Group.fromObject(JSON.parse(event.body));
+        await groupService.deleteGroup(item);
+        return RequestUtils.buildResponse('ok');
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};

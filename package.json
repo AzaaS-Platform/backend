@@ -4,7 +4,7 @@
     "description": "AzaaS Serverless Backend",
     "main": "handler.js",
     "scripts": {
-        "test": "jest",
+        "test": "jest --no-cache",
         "build": "sls package",
         "deploy": "sls deploy --verbose",
         "deploy-prod": "sls deploy --verbose -s prod",
