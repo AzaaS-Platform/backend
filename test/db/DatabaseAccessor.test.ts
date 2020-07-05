@@ -1,7 +1,8 @@
 import { DatabaseAccessor } from '../../src/database/DatabaseAccessor';
 import { DynamoDB } from 'aws-sdk';
 import { DbItem } from '../../src/database/DbItem';
-// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
+import { DbMappingConstants as DB } from '../../src/database/DbMappingConstants';
 
 const PRESET_CLIENT_HASH = '232fe104-13e8-4fb7-8d01-d3cdf37d3b6b';
 
@@ -10,20 +11,23 @@ const PRESET_ONE_GROUP_HASH = '3a1bfcd6-2a5e-44e4-89c4-c13abe869b8b';
 const PRESET_MULTIPLE_GROUP_HASH = 'c5c16cc5-c79e-42f9-beef-2e7f7ec5585d';
 const PRESET_USER_HASH = '69290d1a-e797-440c-870c-98fffdc921fd';
 
-//let RANDOM_CLIENT_HASH: string;
+let RANDOM_CLIENT_HASH: string;
 
 const ERROR_CONDITIONAL_REQUEST_FAILED = new Error('The conditional request failed');
 
-beforeEach(() => {
+beforeAll(() => {
     process.env.STAGE = 'test';
     process.env.REGION = 'eu-central-1';
-    // RANDOM_CLIENT_HASH = uuidv4();
+});
+
+beforeEach(() => {
+    RANDOM_CLIENT_HASH = uuidv4();
 });
 
 test('database accessor reads pre-set group without permissions', async () => {
     // given
     const expected = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_EMPTY_GROUP_HASH,
     });
     const databaseAccessor = new DatabaseAccessor();
@@ -38,7 +42,7 @@ test('database accessor reads pre-set group without permissions', async () => {
 test('database accessor reads pre-set group with one permission', async () => {
     // given
     const expected = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_ONE_GROUP_HASH,
         permissions: {
             type: 'String',
@@ -58,7 +62,7 @@ test('database accessor reads pre-set group with one permission', async () => {
 test('database accessor reads pre-set group with multiple permissions', async () => {
     // given
     const expected = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_MULTIPLE_GROUP_HASH,
         permissions: {
             type: 'String',
@@ -78,7 +82,7 @@ test('database accessor reads pre-set group with multiple permissions', async ()
 test('database accessor reads pre-set user properly', async () => {
     // given
     const expected = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.USER_TYPE_SUFFIX,
         entity: PRESET_USER_HASH,
         groups: {
             type: 'String',
@@ -99,12 +103,12 @@ test('database accessor reads all pre-set items', async () => {
     //given
 
     const emptyGroup = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_EMPTY_GROUP_HASH,
     });
 
     const oneGroup = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_ONE_GROUP_HASH,
         permissions: {
             type: 'String',
@@ -114,7 +118,7 @@ test('database accessor reads all pre-set items', async () => {
     });
 
     const multipleGroup = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_MULTIPLE_GROUP_HASH,
         permissions: {
             type: 'String',
@@ -136,7 +140,7 @@ test('database accessor reads all pre-set items', async () => {
 test('database accessor cannot add group because it already exists', async () => {
     // given
     const DIFFERENT_ONE_GROUP = new DbItem({
-        client: PRESET_CLIENT_HASH,
+        client: PRESET_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
         entity: PRESET_ONE_GROUP_HASH,
         permissions: {
             type: 'String',
@@ -153,24 +157,26 @@ test('database accessor cannot add group because it already exists', async () =>
     await expect(actual).rejects.toEqual(ERROR_CONDITIONAL_REQUEST_FAILED);
 });
 
-//test('database accessor adds new group', async () => {
-//    // given
-//    const hash = uuidv4();
-//    const group = new DbItem({
-//        client: RANDOM_CLIENT_HASH,
-//        entity: hash,
-//        permissions: {
-//            type: 'String',
-//            values: Array<string>('permission_A', 'permission_B'),
-//            wrapperName: 'Set',
-//        } as DynamoDB.DocumentClient.StringSet,
-//    });
-//    const databaseAccessor = new DatabaseAccessor();
-//
-//    // when
-//    await databaseAccessor.put(group, false);
-//    const savedInDatabase = await databaseAccessor.getItemByKeys(RANDOM_CLIENT_HASH, hash, 'group');
-//
-//    // then
-//    expect(savedInDatabase).toEqual(group);
-//});
+test('database accessor puts and removes new group', async () => {
+    // given
+    const hash = uuidv4();
+    const group = new DbItem({
+        client: `${RANDOM_CLIENT_HASH}:group`,
+        entity: hash,
+        permissions: {
+            type: 'String',
+            values: Array<string>('permission_C', 'permission_D'),
+            wrapperName: 'Set',
+        } as DynamoDB.DocumentClient.StringSet,
+    });
+    const databaseAccessor = new DatabaseAccessor();
+
+    // when
+    await databaseAccessor.put(group, false);
+    await databaseAccessor.delete(group);
+
+    const savedInDatabase = await databaseAccessor.getItemByKeys(RANDOM_CLIENT_HASH, hash, 'group');
+
+    // then
+    expect(savedInDatabase).toBeNull();
+});

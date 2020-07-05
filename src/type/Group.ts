@@ -19,7 +19,7 @@ export class Group {
 
     public toDbItem(): DbItem {
         const mapping: { [key: string]: any } = {};
-        mapping[DB.CLIENT] = this.client;
+        mapping[DB.CLIENT] = this.client + DB.GROUP_TYPE_SUFFIX;
         mapping[DB.ENTITY] = this.entity;
         mapping[DB.PERMISSIONS] = {
             type: 'String',
@@ -30,7 +30,7 @@ export class Group {
     }
 
     static fromDbItem(item: DbItem): Group {
-        return new Group(item.get(DB.CLIENT), item.get(DB.ENTITY), Group.getPermissionsArray(item));
+        return new Group(item.get(DB.CLIENT.split(':')[0]), item.get(DB.ENTITY), Group.getPermissionsArray(item));
     }
 
     private static getPermissionsArray(item: DbItem): Array<string> {

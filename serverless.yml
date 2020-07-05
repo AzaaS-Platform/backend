@@ -34,30 +34,6 @@ provider:
           Resource: "*"
 
 functions:
-    hello:
-        handler: src/controllers/handler.hello
-        events:
-            - http:
-                  method: get
-                  path: hello
-    bye:
-        handler: src/controllers/handler.bye
-        events:
-            - http:
-                  method: get
-                  path: bye
-    getUser:
-        handler: src/controllers/handler.getUser
-        events:
-            - http:
-                method: get
-                path: getUser
-    getGroup:
-        handler: src/controllers/handler.getGroup
-        events:
-            - http:
-                  method: get
-                  path: getGroup
     groupGet:
         handler: src/controllers/GroupController.get
         events:
@@ -80,5 +56,11 @@ functions:
         handler: src/controllers/GroupController.modify
         events:
             - http:
-                  method: post
+                  method: put
                   path: group/modify
+    groupRemove:
+      handler: src/controllers/GroupController.remove
+      events:
+        - http:
+            method: delete
+            path: group/remove

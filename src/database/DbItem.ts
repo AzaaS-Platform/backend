@@ -1,12 +1,13 @@
 import { InternalServerError } from '../error/InternalServerError';
 import { DbMappingConstants } from './DbMappingConstants';
 
+/**
+ * DbItem should include type suffix! E.g. User item -> 1234-5678-9012-3456:user
+ *
+ */
+
 export class DbItem {
-    constructor(private item: { [key: string]: any }) {
-        if (this.has(DbMappingConstants.CLIENT)) {
-            this.snapOnSeparator();
-        }
-    }
+    constructor(private item: { [key: string]: any }) {}
 
     public get(key: string): any {
         if (this.item[key] === undefined) {
@@ -24,17 +25,5 @@ export class DbItem {
 
     public getMap(): { [key: string]: any } {
         return this.item;
-    }
-
-    private snapOnSeparator(): void {
-        const separator = (this.item[DbMappingConstants.CLIENT] as string).lastIndexOf(
-            DbMappingConstants.TYPE_SEPARATOR,
-        );
-        if (separator !== -1) {
-            this.item[DbMappingConstants.CLIENT] = (this.item[DbMappingConstants.CLIENT] as string).substring(
-                0,
-                separator,
-            );
-        }
     }
 }

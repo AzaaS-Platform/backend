@@ -52,4 +52,13 @@ export class GroupService {
             else throw new InternalServerError(e.message);
         }
     }
+
+    async deleteGroup(group: Group): Promise<void> {
+        try {
+            return await this.databaseAccessor.delete(group.toDbItem());
+        } catch (e) {
+            if (e.message === 'The conditional request failed') throw new BadRequest('item does not exist');
+            else throw new InternalServerError(e.message);
+        }
+    }
 }
