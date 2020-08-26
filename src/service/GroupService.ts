@@ -1,12 +1,14 @@
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
-import { Group } from '../type/Group';
-import { BadRequest } from '../error/BadRequest';
+import { Group } from '../model/Group';
 import { InternalServerError } from '../error/InternalServerError';
+import { EntityService } from './EntityService';
 
-export class GroupService {
-    constructor(private databaseAccessor: DatabaseAccessor) {}
+export class GroupService extends EntityService {
+    constructor(databaseAccessor: DatabaseAccessor) {
+        super(databaseAccessor);
+    }
 
-    async getGroupByKey(client: string, key: string): Promise<Group | null> {
+    async getByKey(client: string, key: string): Promise<Group | null> {
         try {
             const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
 
@@ -20,7 +22,7 @@ export class GroupService {
         }
     }
 
-    async getAllGroups(client: string): Promise<Array<Group>> {
+    async getAll(client: string): Promise<Array<Group>> {
         try {
             const items = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
             if (items != null) {
@@ -32,33 +34,6 @@ export class GroupService {
             }
         } catch (e) {
             throw new InternalServerError(e.message);
-        }
-    }
-
-    async addGroup(group: Group): Promise<void> {
-        try {
-            return await this.databaseAccessor.put(group.toDbItem(), false);
-        } catch (e) {
-            if (e.message === 'The conditional request failed') throw new BadRequest('cannot overwrite item');
-            else throw new InternalServerError(e.message);
-        }
-    }
-
-    async modifyGroup(group: Group): Promise<void> {
-        try {
-            return await this.databaseAccessor.put(group.toDbItem(), true);
-        } catch (e) {
-            if (e.message === 'The conditional request failed') throw new BadRequest('item does not exist');
-            else throw new InternalServerError(e.message);
-        }
-    }
-
-    async deleteGroup(group: Group): Promise<void> {
-        try {
-            return await this.databaseAccessor.delete(group.toDbItem());
-        } catch (e) {
-            if (e.message === 'The conditional request failed') throw new BadRequest('item does not exist');
-            else throw new InternalServerError(e.message);
         }
     }
 }
