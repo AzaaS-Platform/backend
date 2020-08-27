@@ -64,3 +64,34 @@ functions:
         - http:
             method: delete
             path: group/remove
+
+    userGet:
+      handler: src/controllers/UserController.get
+      events:
+        - http:
+            method: get
+            path: user/get
+    userGetAll:
+      handler: src/controllers/UserController.getAll
+      events:
+        - http:
+            method: get
+            path: user/getAll
+    userAdd:
+      handler: src/controllers/UserController.add
+      events:
+        - http:
+            method: post
+            path: user/add
+    userModify:
+      handler: src/controllers/UserController.modify
+      events:
+        - http:
+            method: put
+            path: user/modify
+    userRemove:
+      handler: src/controllers/UserController.remove
+      events:
+        - http:
+            method: delete
+            path: user/remove

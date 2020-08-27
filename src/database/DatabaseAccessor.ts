@@ -20,7 +20,7 @@ export class DatabaseAccessor {
         }).promise();
 
         if (response.Item != undefined) {
-            return new DbItem(response.Item);
+            return new DbItem(response.Item).unwrapSets();
         } else return null;
     }
 
@@ -36,7 +36,7 @@ export class DatabaseAccessor {
         }).promise();
 
         if (response.Items != undefined) {
-            return response.Items.map(it => new DbItem(it));
+            return response.Items.map(it => new DbItem(it).unwrapSets());
         } else return null;
     }
 
@@ -49,7 +49,7 @@ export class DatabaseAccessor {
         }
         const response = await this.DYNAMO_DB.put({
             TableName: DatabaseAccessor.determineTable(),
-            Item: item.getMap(),
+            Item: item.wrapSets().getMap(),
             ConditionExpression: conditionExpression,
         }).promise();
 
