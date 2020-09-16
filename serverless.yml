@@ -1,97 +1,143 @@
 service:
-    name: azaas-backend
-    description: 'AzaaS Backend Lambda service'
+  name: azaas-backend
+  description: 'AzaaS Backend Lambda service'
 
 custom:
-    webpack:
-        webpackConfig: ./webpack.config.js
-        includeModules: true
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
 
 plugins:
-    - serverless-webpack
+  - serverless-webpack
 
 provider:
-    name: aws
-    runtime: nodejs12.x
-    stage: ${opt:stage, 'dev'}
-    region: eu-central-1
-    apiGateway:
-        minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
-    environment:
-        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-        STAGE: ${self:provider.stage}
-        REGION: ${self:provider.region}
-    iamRoleStatements:
-        - Effect: Allow
-          Action:
-              - dynamodb:Query
-              - dynamodb:Scan
-              - dynamodb:GetItem
-              - dynamodb:PutItem
-              - dynamodb:UpdateItem
-              - dynamodb:DeleteItem
-              - dynamodb:DescribleTable
-          Resource: "*"
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-central-1
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribleTable
+      Resource: "*"
 
 functions:
-    groupGet:
-        handler: src/controllers/GroupController.get
-        events:
-            - http:
-                  method: get
-                  path: group/get
-    groupGetAll:
-        handler: src/controllers/GroupController.getAll
-        events:
-            - http:
-                  method: get
-                  path: group/getAll
-    groupAdd:
-        handler: src/controllers/GroupController.add
-        events:
-            - http:
-                  method: post
-                  path: group/add
-    groupModify:
-        handler: src/controllers/GroupController.modify
-        events:
-            - http:
-                  method: put
-                  path: group/modify
-    groupRemove:
-      handler: src/controllers/GroupController.remove
-      events:
-        - http:
-            method: delete
-            path: group/remove
+  groupGet:
+    handler: src/controllers/GroupController.get
+    events:
+      - http:
+          method: get
+          path: groups/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  groupGetAll:
+    handler: src/controllers/GroupController.getAll
+    events:
+      - http:
+          method: get
+          path: groups/{client}
+          request:
+            parameters:
+              paths:
+                client: true
+  groupAdd:
+    handler: src/controllers/GroupController.add
+    events:
+      - http:
+          method: post
+          path: groups/{client}
+          request:
+            parameters:
+              paths:
+                client: true
+  groupModify:
+    handler: src/controllers/GroupController.modify
+    events:
+      - http:
+          method: put
+          path: groups/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  groupRemove:
+    handler: src/controllers/GroupController.remove
+    events:
+      - http:
+          method: delete
+          path: groups/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
 
-    userGet:
-      handler: src/controllers/UserController.get
-      events:
-        - http:
-            method: get
-            path: user/get
-    userGetAll:
-      handler: src/controllers/UserController.getAll
-      events:
-        - http:
-            method: get
-            path: user/getAll
-    userAdd:
-      handler: src/controllers/UserController.add
-      events:
-        - http:
-            method: post
-            path: user/add
-    userModify:
-      handler: src/controllers/UserController.modify
-      events:
-        - http:
-            method: put
-            path: user/modify
-    userRemove:
-      handler: src/controllers/UserController.remove
-      events:
-        - http:
-            method: delete
-            path: user/remove
+  userGet:
+    handler: src/controllers/UserController.get
+    events:
+      - http:
+          method: get
+          path: users/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  userGetAll:
+    handler: src/controllers/UserController.getAll
+    events:
+      - http:
+          method: get
+          path: users/{client}
+          request:
+            parameters:
+              paths:
+                client: true
+  userAdd:
+    handler: src/controllers/UserController.add
+    events:
+      - http:
+          method: post
+          path: users/{client}
+          request:
+            parameters:
+              paths:
+                client: true
+  userModify:
+    handler: src/controllers/UserController.modify
+    events:
+      - http:
+          method: put
+          path: users/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  userRemove:
+    handler: src/controllers/UserController.remove
+    events:
+      - http:
+          method: delete
+          path: users/{client}/{entity}
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true

@@ -28,9 +28,11 @@ export abstract class EntityService {
         }
     }
 
-    async delete(entity: Entity): Promise<void> {
+    abstract async delete(client: string, id: string): Promise<void>;
+
+    protected async deleteImpl(client: string, id: string, suffix: string): Promise<void> {
         try {
-            return await this.databaseAccessor.delete(entity.toDbItem());
+            return await this.databaseAccessor.delete(client, id, suffix);
         } catch (e) {
             if (e.message === 'The conditional request failed') throw new BadRequest('item does not exist');
             else throw new InternalServerError(e.message);

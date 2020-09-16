@@ -78,7 +78,7 @@ test('database accessor adds and removes new group', async () => {
 
     // when
     await databaseAccessor.put(group, false);
-    await databaseAccessor.delete(group);
+    await databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE_SUFFIX);
 
     const savedInDatabase = await databaseAccessor.getItemByKeys(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE);
 
@@ -108,7 +108,7 @@ test('database accessor edits group', async () => {
     await databaseAccessor.put(editedGroup, true);
     const actualAfterEdit = await databaseAccessor.getItemByKeys(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE);
 
-    await databaseAccessor.delete(group);
+    await databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE_SUFFIX);
     const actualAfterDelete = await databaseAccessor.getItemByKeys(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE);
 
     // then
@@ -154,15 +154,11 @@ test('database accessor cannot edit group because it does not exist', async () =
 test('database accessor can delete group which does not exist', async () => {
     // given
     const hash = uuidv4();
-    const group = new DbItem({
-        client: RANDOM_CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
-        entity: hash,
-        permissions: Array<string>('permission_A', 'permission_B'),
-    });
+
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = databaseAccessor.delete(group);
+    const actual = databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.GROUP_TYPE);
 
     // then
     await expect(actual).resolves.toBeUndefined();

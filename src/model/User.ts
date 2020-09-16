@@ -16,6 +16,7 @@ export class User extends Entity {
             throw new InternalServerError('groups were not initialized');
         }
     }
+
     set groupObjects(groups: Array<Group>) {
         this._groupObjects = groups;
     }
@@ -35,25 +36,8 @@ export class User extends Entity {
         return new DbItem(mapping);
     }
 
-    public static fromDbItem(item: DbItem): User {
-        return new User(item.get(DB.CLIENT), item.get(DB.ENTITY), User.getGroupsArray(item));
-    }
-
-    public static fromObject(object: User): User {
-        if (object.groups === undefined) object.groups = new Array<string>();
-        return new User(object.client, object.entity, object.groups);
-    }
-
     public populateGroups(groups: Array<Group>): void {
         this.groupObjects = groups;
-    }
-
-    private static getGroupsArray(item: DbItem): Array<string> {
-        if (!item.has(DB.GROUPS)) {
-            return new Array<string>();
-        } else {
-            return item.get(DB.GROUPS);
-        }
     }
 
     private getStringsFromGroups(): Array<string> | undefined {

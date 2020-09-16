@@ -19,21 +19,4 @@ export class Group extends Entity {
         }
         return new DbItem(mapping);
     }
-
-    static fromDbItem(item: DbItem): Group {
-        return new Group(item.get(DB.CLIENT), item.get(DB.ENTITY), Group.getPermissionsArray(item));
-    }
-
-    public static fromObject(object: Group): Group {
-        if (object.permissions === undefined) object.permissions = new Array<string>();
-        return new Group(object.client, object.entity, object.permissions);
-    }
-
-    private static getPermissionsArray(item: DbItem): Array<string> {
-        if (!item.has(DB.PERMISSIONS)) {
-            return new Array<string>();
-        } else {
-            return item.get(DB.PERMISSIONS);
-        }
-    }
 }
