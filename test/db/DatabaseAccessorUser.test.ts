@@ -91,7 +91,7 @@ test('database accessor adds and removes new user', async () => {
         DbMappingConstants.USER_TYPE,
     );
 
-    await databaseAccessor.delete(user);
+    await databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.USER_TYPE_SUFFIX);
     const actualAfterDelete = await databaseAccessor.getItemByKeys(
         RANDOM_CLIENT_HASH,
         hash,
@@ -129,7 +129,7 @@ test('database accessor edits user', async () => {
         DbMappingConstants.USER_TYPE,
     );
 
-    await databaseAccessor.delete(user);
+    await databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.USER_TYPE_SUFFIX);
     const actualAfterDelete = await databaseAccessor.getItemByKeys(
         RANDOM_CLIENT_HASH,
         hash,
@@ -179,15 +179,11 @@ test('database accessor cannot edit user because it does not exist', async () =>
 test('database accessor can delete user which does not exist', async () => {
     // given
     const hash = uuidv4();
-    const user = new DbItem({
-        client: RANDOM_CLIENT_HASH + DB.USER_TYPE_SUFFIX,
-        entity: hash,
-        groups: Array<string>('8ebca6ad-74ea-4c52-ae2d-612f15a5e4ce', 'de3c93f1-bfdf-49ec-a385-87d70595bd92'),
-    });
+
     const databaseAccessor = new DatabaseAccessor();
 
     // when
-    const actual = databaseAccessor.delete(user);
+    const actual = databaseAccessor.delete(RANDOM_CLIENT_HASH, hash, DB.USER_TYPE_SUFFIX);
 
     // then
     await expect(actual).resolves.toBeUndefined();

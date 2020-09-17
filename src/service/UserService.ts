@@ -4,7 +4,8 @@ import { Group } from '../model/Group';
 import { GroupService } from './GroupService';
 import { InternalServerError } from '../error/InternalServerError';
 import { EntityService } from './EntityService';
-import { DbMappingConstants } from '../database/DbMappingConstants';
+import { DbMappingConstants as DB, DbMappingConstants } from '../database/DbMappingConstants';
+import { UserFactory } from '../model/factory/UserFactory';
 
 export class UserService extends EntityService {
     constructor(databaseAccessor: DatabaseAccessor, private groupService: GroupService) {
@@ -15,7 +16,7 @@ export class UserService extends EntityService {
         const item = await this.databaseAccessor.getItemByKeys(client, key, DbMappingConstants.USER_TYPE);
 
         if (item != null) {
-            const user = User.fromDbItem(item);
+            const user = UserFactory.fromDbItem(item);
             user.populateGroups(await this.getUserGroups(user));
             return user;
         } else {
@@ -29,7 +30,7 @@ export class UserService extends EntityService {
         if (items != null) {
             return await Promise.all(
                 items.map(async it => {
-                    const user = User.fromDbItem(it);
+                    const user = UserFactory.fromDbItem(it);
                     user.populateGroups(await this.getUserGroups(user));
                     return user;
                 }),
@@ -49,9 +50,8 @@ export class UserService extends EntityService {
         return super.modify(entity);
     }
 
-    async delete(entity: User): Promise<void> {
-        entity.populateGroups(await this.getUserGroups(entity));
-        return super.delete(entity);
+    async delete(client: string, id: string): Promise<void> {
+        return this.deleteImpl(client, id, DB.USER_TYPE_SUFFIX);
     }
 
     public async getUserGroups(user: User): Promise<Array<Group>> {

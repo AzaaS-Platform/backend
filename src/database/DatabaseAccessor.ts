@@ -60,12 +60,12 @@ export class DatabaseAccessor {
         }
     }
 
-    public async delete(item: DbItem): Promise<void> {
+    public async delete(client: string, id: string, suffix: string): Promise<void> {
         const response = await this.DYNAMO_DB.delete({
             TableName: DatabaseAccessor.determineTable(),
             Key: {
-                client: item.get('client'),
-                entity: item.get('entity'),
+                client: client + suffix,
+                entity: id,
             },
         }).promise();
 

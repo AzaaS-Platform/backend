@@ -3,6 +3,9 @@ import { HttpError } from '../error/HttpError';
 import { BadRequest } from '../error/BadRequest';
 
 export class RequestUtils {
+    public static CLIENT = 'client';
+    public static ID = 'id';
+
     static buildResponse(message: string): APIGatewayProxyResult {
         return {
             statusCode: 200,
@@ -33,5 +36,41 @@ export class RequestUtils {
             }
         });
         return parameters;
+    }
+
+    static bindClient(event: APIGatewayProxyEvent): string {
+        if (event.pathParameters === null || event.pathParameters[this.CLIENT] === undefined) {
+            throw new BadRequest('client not passed');
+        } else {
+            return event.pathParameters[this.CLIENT];
+        }
+    }
+
+    static bindId(event: APIGatewayProxyEvent): string {
+        if (event.pathParameters === null || event.pathParameters[this.ID] === undefined) {
+            throw new BadRequest('id not passed');
+        } else {
+            return event.pathParameters[this.ID];
+        }
+    }
+
+    static parse<T extends Record<string, any>>(payload: string, schema: new () => T): T {
+        const object = JSON.parse(payload);
+
+        const allowed = [this.CLIENT, this.ID];
+        const schemaKeys = Object.keys(new schema()).filter(it => !allowed.includes(it));
+        const payloadKeys = Object.keys(object).filter(it => !allowed.includes(it));
+
+        const missing = schemaKeys.filter(it => !payloadKeys.includes(it));
+        const unrecognized = payloadKeys.filter(it => !schemaKeys.includes(it));
+
+        if (missing.length === 0 && unrecognized.length === 0) {
+            return object;
+        } else {
+            let error = '';
+            if (missing.length > 0) error += 'missing fields: ' + missing + '\n';
+            if (unrecognized.length > 0) error += 'unrecognized fields: ' + unrecognized + '\n';
+            throw new BadRequest(error);
+        }
     }
 }

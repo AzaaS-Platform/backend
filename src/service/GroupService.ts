@@ -2,6 +2,8 @@ import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { Group } from '../model/Group';
 import { InternalServerError } from '../error/InternalServerError';
 import { EntityService } from './EntityService';
+import { DbMappingConstants as DB } from '../database/DbMappingConstants';
+import { GroupFactory } from '../model/factory/GroupFactory';
 
 export class GroupService extends EntityService {
     constructor(databaseAccessor: DatabaseAccessor) {
@@ -13,7 +15,7 @@ export class GroupService extends EntityService {
             const item = await this.databaseAccessor.getItemByKeys(client, key, 'group');
 
             if (item != null) {
-                return Group.fromDbItem(item);
+                return GroupFactory.fromDbItem(item);
             } else {
                 return null;
             }
@@ -27,7 +29,7 @@ export class GroupService extends EntityService {
             const items = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
             if (items != null) {
                 return items.map(it => {
-                    return Group.fromDbItem(it);
+                    return GroupFactory.fromDbItem(it);
                 });
             } else {
                 return new Array<Group>();
@@ -35,5 +37,9 @@ export class GroupService extends EntityService {
         } catch (e) {
             throw new InternalServerError(e.message);
         }
+    }
+
+    async delete(client: string, id: string): Promise<void> {
+        return super.deleteImpl(client, id, DB.GROUP_TYPE_SUFFIX);
     }
 }
