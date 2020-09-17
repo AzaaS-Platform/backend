@@ -5,6 +5,7 @@
     "main": "handler.js",
     "scripts": {
         "test": "jest --no-cache",
+        "local": "sls offline",
         "build": "sls package",
         "deploy": "sls deploy --verbose",
         "deploy-prod": "sls deploy --verbose -s prod",
@@ -30,6 +31,7 @@
         "jest": "^25.3.0",
         "prettier": "^1.19.1",
         "serverless": "^1.66.0",
+        "serverless-offline": "^6.7.0",
         "serverless-webpack": "^5.2.0",
         "ts-jest": "^25.4.0",
         "ts-loader": "^5.3.3",
