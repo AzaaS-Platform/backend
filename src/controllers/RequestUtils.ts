@@ -6,9 +6,14 @@ export class RequestUtils {
     public static CLIENT = 'client';
     public static ID = 'id';
 
-    static buildResponse(message: string): APIGatewayProxyResult {
+    static buildResponse(message: string, statusCode = 200): APIGatewayProxyResult {
         return {
-            statusCode: 200,
+            statusCode: statusCode,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Headers': 'Authorization',
+            },
             body: message,
         };
     }

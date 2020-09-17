@@ -5,6 +5,7 @@ import { GroupService } from '../service/GroupService';
 import { BadRequest } from '../error/BadRequest';
 import { GroupFactory } from '../model/factory/GroupFactory';
 import { GroupDto } from '../model/dto/GroupDto';
+import { GroupResponse } from '../model/response/GroupResponse';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -15,7 +16,9 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const id = RequestUtils.bindId(event);
 
         const group = await groupService.getByKey(client, id);
-        return RequestUtils.buildResponse(JSON.stringify(group));
+
+        const responseBody = group === null ? {} : new GroupResponse(group?.client, group?.entity, group?.permissions);
+        return RequestUtils.buildResponse(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -29,7 +32,8 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const client = RequestUtils.bindClient(event);
 
         const groups = await groupService.getAll(client);
-        return RequestUtils.buildResponse(JSON.stringify(groups));
+        const responseBody = groups.map(group => new GroupResponse(group.client, group.entity, group.permissions));
+        return RequestUtils.buildResponse(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }

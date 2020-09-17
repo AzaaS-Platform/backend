@@ -6,6 +6,7 @@ import { UserService } from '../service/UserService';
 import { BadRequest } from '../error/BadRequest';
 import { UserDto } from '../model/dto/UserDto';
 import { UserFactory } from '../model/factory/UserFactory';
+import { UserResponse } from '../model/response/UserResponse';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -17,7 +18,8 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const id = RequestUtils.bindId(event);
 
         const user = await userService.getByKey(client, id);
-        return RequestUtils.buildResponse(JSON.stringify(user));
+        const responseBody = user === null ? {} : new UserResponse(user.client, user.entity, user.groups);
+        return RequestUtils.buildResponse(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -32,7 +34,9 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const client = RequestUtils.bindClient(event);
 
         const users = await userService.getAll(client);
-        return RequestUtils.buildResponse(JSON.stringify(users));
+        const responseBody = users.map(user => new UserResponse(user.client, user.entity, user.groups));
+
+        return RequestUtils.buildResponse(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }

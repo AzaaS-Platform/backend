@@ -5,7 +5,7 @@
     "main": "handler.js",
     "scripts": {
         "test": "jest --no-cache",
-        "local": "sls offline",
+        "local": "sls offline -s dev",
         "build": "sls package",
         "deploy": "sls deploy --verbose",
         "deploy-prod": "sls deploy --verbose -s prod",

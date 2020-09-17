@@ -11,11 +11,18 @@ plugins:
   - serverless-webpack
   - serverless-offline
 
+package:
+  individually: false
+  exclude:
+    - node_modules/**
+    - src/**
+
 provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: eu-central-1
+  timeout: 15
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
