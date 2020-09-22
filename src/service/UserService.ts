@@ -41,6 +41,10 @@ export class UserService extends EntityService {
     }
 
     async add(entity: User): Promise<void> {
+        const user = this.getByKey(entity.client, entity.entity);
+        if (!user === null) {
+            return;
+        }
         entity.populateGroups(await this.getUserGroups(entity));
         return super.add(entity);
     }

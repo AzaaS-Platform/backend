@@ -9,6 +9,10 @@ export class DbMappingConstants {
     public static CLIENT_VALUE = ':client';
     public static ENTITY_VALUE = ':entity';
 
+    public static USERNAME = 'username';
+    public static PASSWORD_HASH = 'passwordHash';
+    public static IS_ADMIN = 'isAdmin';
+
     // schema constants
 
     public static TYPE_SEPARATOR = ':';

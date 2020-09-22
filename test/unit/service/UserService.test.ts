@@ -31,19 +31,36 @@ const EMPTY_USER_HASH = 'b9c9ce4e-3df0-4b7b-9f25-df86e12e574b';
 const EMPTY_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: EMPTY_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
 });
-const EMPTY_USER = new User(CLIENT_HASH, EMPTY_USER_HASH, Array<string>(), Array<Group>());
+const EMPTY_USER = new User(
+    CLIENT_HASH,
+    EMPTY_USER_HASH,
+    'username',
+    'password',
+    Array<string>(),
+    false,
+    Array<Group>(),
+);
 
 const MULTIPLE_USER_HASH = '3c83b316-3904-498b-a5e6-e1c6c7b217d6';
 const MULTIPLE_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: MULTIPLE_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH),
 });
 const MULTIPLE_USER = new User(
     CLIENT_HASH,
     MULTIPLE_USER_HASH,
+    'username',
+    'password',
     Array<string>(GROUP_1_HASH, GROUP_2_HASH),
+    false,
     Array<Group>(GROUP_1, GROUP_2),
 );
 
@@ -54,6 +71,9 @@ const BROKEN_USER_HASH = '61db4f42-08ff-4ba6-ba20-79d4010097cf';
 const BROKEN_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: BROKEN_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH, NON_EXISTING_GROUP_HASH),
 });
 
