@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
-import { RequestUtils } from './RequestUtils';
+import { RequestUtils } from '../Utils/RequestUtils';
 import { UserService } from '../service/UserService';
 import { BadRequest } from '../error/BadRequest';
 import { UserDto } from '../model/dto/UserDto';

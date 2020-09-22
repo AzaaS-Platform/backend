@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import { RequestUtils } from './RequestUtils';
+import { RequestUtils } from '../Utils/RequestUtils';
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
 import { BadRequest } from '../error/BadRequest';

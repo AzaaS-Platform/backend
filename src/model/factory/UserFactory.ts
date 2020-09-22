@@ -3,16 +3,15 @@ import { DbItem } from '../../database/DbItem';
 import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
 import { User } from '../User';
 import { UserDto } from '../dto/UserDto';
-import { hashSync } from 'bcrypt';
+import { PasswordUtils } from '../../Utils/PasswordUtils';
 
 export class UserFactory {
-    private static SALT = 10;
     static fromDto(client: string, id: string, user: UserDto): User {
         return new User(
             client,
             id,
             user.username as string,
-            hashSync(user.password, this.SALT),
+            PasswordUtils.hash(user.password),
             user.groups as Array<string>,
             user.isAdmin as boolean,
         );
@@ -23,7 +22,7 @@ export class UserFactory {
             client,
             UUID(),
             user.username as string,
-            hashSync(user.password, this.SALT),
+            PasswordUtils.hash(user.password),
             user.groups as Array<string>,
             user.isAdmin as boolean,
         );
