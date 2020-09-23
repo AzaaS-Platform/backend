@@ -162,3 +162,13 @@ functions:
             parameters:
               paths:
                 client: true
+  authorize:
+    handler: src/controllers/AuthenticationController.authorize
+    events:
+      - http:
+          method: post
+          path: authorize/{client}
+          request:
+            parameters:
+              paths:
+                client: true

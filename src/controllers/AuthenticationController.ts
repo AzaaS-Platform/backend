@@ -6,6 +6,7 @@ import { AuthenticationService } from '../service/AuthenticationService';
 import { RequestUtils } from '../Utils/RequestUtils';
 import { CredentialsDto } from '../model/dto/CredentialsDto';
 import { BadRequest } from '../error/BadRequest';
+import { AuthorizeRequest } from '../model/dto/AuthorizeRequest';
 
 export const getToken: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -26,12 +27,47 @@ export const getToken: APIGatewayProxyHandler = async (event, _context): Promise
         }
 
         const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password);
-        console.log(jwt);
         return RequestUtils.buildResponseWithBody(
             JSON.stringify({
                 token: jwt,
             }),
         );
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};
+// POST with Authorization header
+export const authorize: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+        const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
+
+        if (event.headers['Authorization'] == undefined) {
+            throw new BadRequest(
+                "Missing 'Authorization' header. Json Web Token is required to make this call. Make an API call on /token/{clientId} to get one.",
+            );
+        }
+        if (event.body === null) {
+            throw new BadRequest('Request body cannot be blank.');
+        }
+
+        const client = RequestUtils.bindClient(event);
+        const token = event.headers['Authorization'].split(' ')[1];
+
+        const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
+        const isAuthorized = await authenticationService.authorizeUser(
+            client,
+            token,
+            authorizeRequest.requiredPermissions ?? [],
+        );
+
+        if (isAuthorized) {
+            return RequestUtils.buildResponse('Authorized.', 200);
+        } else {
+            return RequestUtils.buildResponse('Unauthorized.', 401);
+        }
     } catch (e) {
         return RequestUtils.handleError(e);
     }
