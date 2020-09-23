@@ -98,4 +98,11 @@ export class RequestUtils {
             throw new BadRequest(error);
         }
     }
+
+    static extractJWTFromHeader(headers: { [p: string]: string }): string {
+        if (headers['Authorization'] == null || headers['Authorization'] == undefined) {
+            throw new BadRequest('Missing "Authorized" header.');
+        }
+        return headers['Authorization'].split(' ')[1];
+    }
 }

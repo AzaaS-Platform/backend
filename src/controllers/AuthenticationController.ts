@@ -44,17 +44,12 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        if (event.headers['Authorization'] == undefined) {
-            throw new BadRequest(
-                "Missing 'Authorization' header. Json Web Token is required to make this call. Make an API call on /token/{clientId} to get one.",
-            );
-        }
         if (event.body === null) {
             throw new BadRequest('Request body cannot be blank.');
         }
 
         const client = RequestUtils.bindClient(event);
-        const token = event.headers['Authorization'].split(' ')[1];
+        const token = RequestUtils.extractJWTFromHeader(event.headers);
 
         const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
         const isAuthorized = await authenticationService.authorizeUser(
