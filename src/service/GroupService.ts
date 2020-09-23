@@ -26,7 +26,7 @@ export class GroupService extends EntityService {
 
     async getAll(client: string): Promise<Array<Group>> {
         try {
-            const items = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
+            const items = await this.databaseAccessor.getItemsByPartitionKey(client, 'group');
             if (items != null) {
                 return items.map(it => {
                     return GroupFactory.fromDbItem(it);

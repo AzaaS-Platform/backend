@@ -96,7 +96,7 @@ const MOCK_GET_ITEM_BY_KEY = async (
     return null;
 };
 
-const BAD_REQUEST_CANNOT_OVERWRITE = new BadRequest('cannot overwrite item');
+const BAD_REQUEST_CANNOT_OVERWRITE = new BadRequest('User already exist.');
 const BAD_REQUEST_ITEM_DOES_NOT_EXIST = new BadRequest('item does not exist');
 
 beforeEach(() => {
@@ -196,7 +196,7 @@ test('user service throws error when user is in a non-existing group', async () 
         await userService.getByKey(CLIENT_HASH, BROKEN_USER_HASH);
     } catch (e) {
         // then
-        expect(e.message).toEqual('user belongs to non-existing group');
+        expect(e.message).toEqual('User belongs to non-existing group.');
         expect((e as InternalServerError).code).toEqual(500);
     }
     expect.assertions(2);

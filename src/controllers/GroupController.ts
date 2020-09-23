@@ -18,7 +18,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const group = await groupService.getByKey(client, id);
 
         const responseBody = group === null ? {} : new GroupResponse(group?.client, group?.entity, group?.permissions);
-        return RequestUtils.buildResponse(JSON.stringify(responseBody));
+        return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -33,7 +33,7 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         const groups = await groupService.getAll(client);
         const responseBody = groups.map(group => new GroupResponse(group.client, group.entity, group.permissions));
-        return RequestUtils.buildResponse(JSON.stringify(responseBody));
+        return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -46,14 +46,14 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
 
         const client = RequestUtils.bindClient(event);
         if (event.body === null) {
-            throw new BadRequest('no body passed');
+            throw new BadRequest('Request body cannot be blank.');
         }
 
         const item = RequestUtils.parse(event.body, GroupDto);
         const group = GroupFactory.fromDtoNew(client, item);
 
         await groupService.add(group);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content.', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -74,7 +74,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const group = GroupFactory.fromDto(client, id, item);
 
         await groupService.modify(group);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content.', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -89,7 +89,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const id = RequestUtils.bindId(event);
 
         await groupService.delete(client, id);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -98,12 +98,12 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
 export const test: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
         if (event.body === null) {
-            throw new BadRequest('no body passed');
+            throw new BadRequest('Request body cannot be blank.');
         }
 
         RequestUtils.parse(event.body, GroupDto);
 
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse("Ok. It's a test endpoint.", 200);
     } catch (e) {
         return RequestUtils.handleError(e);
     }

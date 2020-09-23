@@ -13,7 +13,7 @@ export class UserFactory {
             user.username as string,
             PasswordUtils.hash(user.password),
             user.groups as Array<string>,
-            user.isAdmin as boolean,
+            false,
         );
     }
 
@@ -24,7 +24,7 @@ export class UserFactory {
             user.username as string,
             PasswordUtils.hash(user.password),
             user.groups as Array<string>,
-            user.isAdmin as boolean,
+            false,
         );
     }
 

@@ -125,7 +125,7 @@ test('group service returns all groups', async () => {
     const databaseAccessor = new DatabaseAccessor();
     const groupService = new GroupService(databaseAccessor);
 
-    databaseAccessor.getItemsPartitionKey = MOCK_GET_ITEMS_PARTITION_KEY;
+    databaseAccessor.getItemsByPartitionKey = MOCK_GET_ITEMS_PARTITION_KEY;
 
     //when
     const actual = await groupService.getAll(CLIENT_HASH);

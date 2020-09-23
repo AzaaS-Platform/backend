@@ -14,7 +14,23 @@ export class RequestUtils {
                 'Access-Control-Allow-Credentials': true,
                 'Access-Control-Allow-Headers': 'Authorization',
             },
-            body: message,
+            body: JSON.stringify({
+                statusCode: statusCode,
+                message: message,
+                errors: [],
+            }),
+        };
+    }
+
+    static buildResponseWithBody(responseBody: string, statusCode = 200): APIGatewayProxyResult {
+        return {
+            statusCode: statusCode,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Headers': 'Authorization',
+            },
+            body: responseBody,
         };
     }
 
@@ -22,7 +38,11 @@ export class RequestUtils {
         const code = (error as HttpError).code ?? 500;
         return {
             statusCode: code,
-            body: `${error.stack}`,
+            body: JSON.stringify({
+                statusCode: code,
+                message: code !== 500 ? error.message : '',
+                error: process.env.STAGE !== 'prod' ? error.stack : typeof error,
+            }),
         };
     }
 

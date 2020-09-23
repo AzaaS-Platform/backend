@@ -20,7 +20,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const user = await userService.getByKey(client, id);
         const responseBody =
             user === null ? {} : new UserResponse(user.client, user.entity, user.username, user.groups);
-        return RequestUtils.buildResponse(JSON.stringify(responseBody));
+        return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -36,7 +36,7 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         const users = await userService.getAll(client);
         const responseBody = users.map(user => new UserResponse(user.client, user.entity, user.username, user.groups));
-        return RequestUtils.buildResponse(JSON.stringify(responseBody));
+        return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -49,14 +49,14 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const userService = new UserService(databaseAccessor, groupService);
 
         if (event.body === null) {
-            throw new BadRequest('no body passed');
+            throw new BadRequest('Request body cannot be blank.');
         }
         const client = RequestUtils.bindClient(event);
 
         const item = RequestUtils.parse(event.body, UserDto);
         const user = UserFactory.fromDtoNew(client, item);
         await userService.add(user);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content.', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -69,7 +69,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const userService = new UserService(databaseAccessor, groupService);
 
         if (event.body === null) {
-            throw new BadRequest('no body passed');
+            throw new BadRequest('Request body cannot be blank.');
         }
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
@@ -77,7 +77,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const item = RequestUtils.parse(event.body, UserDto);
         const user = UserFactory.fromDto(client, id, item);
         await userService.modify(user);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content.', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -93,7 +93,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const id = RequestUtils.bindId(event);
 
         await userService.delete(client, id);
-        return RequestUtils.buildResponse('ok');
+        return RequestUtils.buildResponse('No content.', 204);
     } catch (e) {
         return RequestUtils.handleError(e);
     }

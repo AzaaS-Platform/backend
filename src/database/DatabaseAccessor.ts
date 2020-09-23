@@ -24,7 +24,7 @@ export class DatabaseAccessor {
         } else return null;
     }
 
-    public async getItemsPartitionKey(partitionKey: string, entryType: string): Promise<Array<DbItem> | null> {
+    public async getItemsByPartitionKey(partitionKey: string, entryType: string): Promise<Array<DbItem> | null> {
         const keyConditionExpression = `${DB.CLIENT} = ${DB.CLIENT_VALUE}`;
         const expressionAttributeValues: { [key: string]: string } = {};
         expressionAttributeValues[DB.CLIENT_VALUE] = `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}`;
@@ -37,6 +37,26 @@ export class DatabaseAccessor {
 
         if (response.Items != undefined) {
             return response.Items.map(it => new DbItem(it).unwrapSets());
+        } else return null;
+    }
+
+    public async getItemByProperty(
+        partitionKey: string,
+        propertyName: string,
+        propertyValue: string,
+        entryType: string,
+    ): Promise<DbItem | null> {
+        const searchKey: { [key: string]: string } = {};
+        searchKey[DB.CLIENT] = `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}`;
+        searchKey[propertyName] = propertyValue;
+
+        const response = await this.DYNAMO_DB.get({
+            TableName: DatabaseAccessor.determineTable(),
+            Key: searchKey,
+        }).promise();
+
+        if (response.Item != undefined) {
+            return new DbItem(response.Item).unwrapSets();
         } else return null;
     }
 
