@@ -10,7 +10,7 @@ export class AuthenticationService {
     private USER_NOT_FOUND_ERROR = 'User not found.';
     private INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
     private INVALID_JSON_WEB_TOKEN = 'Invalid Json Web Token. Authorization not given.';
-    private TOKEN_EXPIRATION_TIME = '15m';
+    private TOKEN_EXPIRATION_TIME = '30m';
 
     constructor(private userService: UserService) {}
 
@@ -22,11 +22,7 @@ export class AuthenticationService {
         if (!PasswordUtils.validate(password, user.passwordHash)) {
             throw new BadRequest(this.INCORRECT_CREDENTIALS_ERROR);
         }
-        const payload = JWTPayloadFactory.from(
-            client,
-            user.entity,
-            user.groupObjects.flatMap(group => group.permissions),
-        );
+        const payload = JWTPayloadFactory.from(client, user.entity);
 
         //Password hash used as a unique user secret, KISS, or whatever.
         return jwt.sign({ payload }, user.passwordHash, { expiresIn: this.TOKEN_EXPIRATION_TIME });
@@ -40,8 +36,9 @@ export class AuthenticationService {
                 throw new BadRequest(this.USER_NOT_FOUND_ERROR);
             }
             jwt.verify(token, user.passwordHash);
-            // TODO: If not found, try to fetch from db.
-            return permissionRequired.every(permission => payload.prm.includes(permission));
+            return permissionRequired.every(permission =>
+                user.groupObjects.flatMap(group => group.permissions).includes(permission),
+            );
         } catch (error) {
             if (error instanceof JsonWebTokenError || error instanceof TokenExpiredError) {
                 throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);

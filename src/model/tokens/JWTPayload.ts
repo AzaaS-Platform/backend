@@ -7,11 +7,9 @@ export interface ObfuscatedJWTPayload {
 export class JWTPayload {
     clt: string;
     usr: string;
-    prm: Array<string>;
 
-    constructor(client: string, user: string, permissions: Array<string>) {
+    constructor(client: string, user: string) {
         this.clt = client;
         this.usr = user;
-        this.prm = permissions;
     }
 }
