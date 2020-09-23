@@ -17,7 +17,7 @@ export class RequestUtils {
             body: JSON.stringify({
                 statusCode: statusCode,
                 message: message,
-                errors: [],
+                error: undefined,
             }),
         };
     }
@@ -40,7 +40,7 @@ export class RequestUtils {
             statusCode: code,
             body: JSON.stringify({
                 statusCode: code,
-                message: code !== 500 ? error.message : '',
+                message: code !== 500 ? error.message : 'Internal server error.',
                 error: process.env.STAGE !== 'prod' ? error.stack : typeof error,
             }),
         };

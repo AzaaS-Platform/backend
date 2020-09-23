@@ -40,26 +40,6 @@ export class DatabaseAccessor {
         } else return null;
     }
 
-    public async getItemByProperty(
-        partitionKey: string,
-        propertyName: string,
-        propertyValue: string,
-        entryType: string,
-    ): Promise<DbItem | null> {
-        const searchKey: { [key: string]: string } = {};
-        searchKey[DB.CLIENT] = `${partitionKey}${DB.TYPE_SEPARATOR}${entryType}`;
-        searchKey[propertyName] = propertyValue;
-
-        const response = await this.DYNAMO_DB.get({
-            TableName: DatabaseAccessor.determineTable(),
-            Key: searchKey,
-        }).promise();
-
-        if (response.Item != undefined) {
-            return new DbItem(response.Item).unwrapSets();
-        } else return null;
-    }
-
     public async put(item: DbItem, overwrite: boolean): Promise<void> {
         let conditionExpression: string;
         if (overwrite) {

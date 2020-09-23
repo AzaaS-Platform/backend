@@ -1,20 +1,27 @@
 import { UserService } from './UserService';
 import * as jwt from 'jsonwebtoken';
 import { PasswordUtils } from '../Utils/PasswordUtils';
+import { BadRequest } from '../error/BadRequest';
+import { JWTPayloadFactory } from '../model/factory/JWTPayloadFactory';
 
 export class AuthenticationService {
     constructor(private userService: UserService) {}
 
-    public async generateTokenForUser(username: string, passwordHash: string): Promise<string> {
-        const user = await this.userService.getByUsername(username);
+    public async generateTokenForUser(client: string, username: string, password: string): Promise<string> {
+        const user = await this.userService.getByUsername(client, username);
         if (user === null) {
-            throw new Error('User not found.');
+            throw new BadRequest('User not found.');
         }
-        if (!PasswordUtils.validate(passwordHash, user.passwordHash)) {
-            throw new Error('Incorrect credentials.');
+        if (!PasswordUtils.validate(password, user.passwordHash)) {
+            throw new BadRequest('Incorrect credentials.');
         }
-        const payload = { groups: user.groups, id: user.entity, exp: 16500000 };
+        const payload = JWTPayloadFactory.from(
+            client,
+            user.entity,
+            user.groupObjects.flatMap(group => group.permissions),
+        );
 
-        return jwt.sign(payload, 'secret');
+        //TODO: Remember to implement secrets!
+        return jwt.sign(payload.toString(), 'secret');
     }
 }

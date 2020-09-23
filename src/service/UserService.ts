@@ -31,25 +31,23 @@ export class UserService extends EntityService {
     }
 
     /**
+     * Warning: If you can, please use #UserService.getByKey. This one is an expensive operation.
      * @param client - tenant ID
      * @param username - username of the user to get
      * @return User object if user was found, otherwise null
      */
     async getByUsername(client: string, username: string): Promise<User | null> {
-        const item = await this.databaseAccessor.getItemByProperty(
-            client,
-            DB.USERNAME,
-            username,
-            DbMappingConstants.USER_TYPE,
-        );
+        const users = await this.getAll(client);
+        const usersWithUsername = users.filter(user => user.username === username);
 
-        if (item != null) {
-            const user = UserFactory.fromDbItem(item);
-            user.populateGroups(await this.getUserGroups(user));
-            return user;
-        } else {
+        if (usersWithUsername.length > 1) {
+            throw new InternalServerError('Multiple users with the same name in database. Incorrect state.');
+        }
+
+        if (usersWithUsername.length === 0) {
             return null;
         }
+        return usersWithUsername[0];
     }
 
     async getAll(client: string): Promise<Array<User>> {
