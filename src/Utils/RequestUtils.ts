@@ -4,7 +4,7 @@ import { BadRequest } from '../error/BadRequest';
 
 export class RequestUtils {
     public static CLIENT = 'client';
-    public static ID = 'id';
+    public static ID = 'entity';
 
     static buildResponse(message: string, statusCode = 200): APIGatewayProxyResult {
         return {
@@ -69,7 +69,7 @@ export class RequestUtils {
 
     static bindClient(event: APIGatewayProxyEvent): string {
         if (event.pathParameters === null || event.pathParameters[this.CLIENT] === undefined) {
-            throw new BadRequest('client not passed');
+            throw new BadRequest(`Missing "${this.CLIENT}" from path params.`);
         } else {
             return event.pathParameters[this.CLIENT];
         }
@@ -77,7 +77,7 @@ export class RequestUtils {
 
     static bindId(event: APIGatewayProxyEvent): string {
         if (event.pathParameters === null || event.pathParameters[this.ID] === undefined) {
-            throw new BadRequest('id not passed');
+            throw new BadRequest(`Missing "${this.ID}" from path params.`);
         } else {
             return event.pathParameters[this.ID];
         }

@@ -39,7 +39,7 @@ export class GroupService extends EntityService {
         }
     }
     async add(group: Group): Promise<Group> {
-        super.add(group);
+        await super.add(group);
         return group;
     }
 

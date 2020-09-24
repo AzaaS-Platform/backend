@@ -96,7 +96,7 @@ const MOCK_GET_ITEM_BY_KEY = async (
     return null;
 };
 
-const BAD_REQUEST_CANNOT_OVERWRITE = new BadRequest('User already exist.');
+const BAD_REQUEST_CANNOT_OVERWRITE = new BadRequest('cannot overwrite item');
 const BAD_REQUEST_ITEM_DOES_NOT_EXIST = new BadRequest('item does not exist');
 
 beforeEach(() => {

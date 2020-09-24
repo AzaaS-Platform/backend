@@ -72,7 +72,7 @@ export class UserService extends EntityService {
             throw new BadRequest('User already exist.');
         }
         entity.populateGroups(await this.getUserGroups(entity));
-        super.add(entity);
+        await super.add(entity);
         return entity;
     }
 
