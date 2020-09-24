@@ -6,8 +6,10 @@ import { UserService } from '../service/UserService';
 import { BadRequest } from '../error/BadRequest';
 import { UserDto } from '../model/dto/UserDto';
 import { UserFactory } from '../model/factory/UserFactory';
-import { UserResponse } from '../model/response/UserResponse';
 import { PermissionsUtils } from '../Utils/PermissionsUtils';
+
+const NO_CONTENT = 'No content.';
+const CREATED = 'Created';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -23,9 +25,8 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                 const id = RequestUtils.bindId(event);
 
                 const user = await userService.getByKey(client, id);
-                const responseBody =
-                    user === null ? {} : new UserResponse(user.client, user.entity, user.username, user.groups);
-                return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
+                const responseBody = UserFactory.toResponse(user);
+                return RequestUtils.buildResponseWithBody(responseBody);
             },
         );
     } catch (e) {
@@ -46,10 +47,8 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const client = RequestUtils.bindClient(event);
 
                 const users = await userService.getAll(client);
-                const responseBody = users.map(
-                    user => new UserResponse(user.client, user.entity, user.username, user.groups),
-                );
-                return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
+                const responseBody = users.map(user => UserFactory.toResponse(user));
+                return RequestUtils.buildResponseWithBody(responseBody);
             },
         );
     } catch (e) {
@@ -74,8 +73,9 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
 
                 const item = RequestUtils.parse(event.body, UserDto);
                 const user = UserFactory.fromDtoNew(client, item);
-                await userService.add(user);
-                return RequestUtils.buildResponse('No content.', 204);
+                const addedUser = await userService.add(user);
+                const responseBody = UserFactory.toResponse(addedUser);
+                return RequestUtils.buildResponseWithBody(responseBody, CREATED, 201);
             },
         );
     } catch (e) {
@@ -102,7 +102,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const item = RequestUtils.parse(event.body, UserDto);
                 const user = UserFactory.fromDto(client, id, item);
                 await userService.modify(user);
-                return RequestUtils.buildResponse('No content.', 204);
+                return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );
     } catch (e) {
@@ -124,7 +124,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const id = RequestUtils.bindId(event);
 
                 await userService.delete(client, id);
-                return RequestUtils.buildResponse('No content.', 204);
+                return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );
     } catch (e) {

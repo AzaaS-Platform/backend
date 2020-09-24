@@ -22,7 +22,7 @@ export class RequestUtils {
         };
     }
 
-    static buildResponseWithBody(responseBody: string, statusCode = 200): APIGatewayProxyResult {
+    static buildResponseWithBody(responseBody: {}, message?: string, statusCode = 200): APIGatewayProxyResult {
         return {
             statusCode: statusCode,
             headers: {
@@ -30,7 +30,11 @@ export class RequestUtils {
                 'Access-Control-Allow-Credentials': true,
                 'Access-Control-Allow-Headers': 'Authorization',
             },
-            body: responseBody,
+            body: JSON.stringify({
+                statusCode: statusCode,
+                message: message,
+                payload: responseBody,
+            }),
         };
     }
 

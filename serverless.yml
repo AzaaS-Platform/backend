@@ -153,7 +153,7 @@ functions:
                 client: true
                 entity: true
   getToken:
-    handler: src/controllers/AuthenticationController.getToken
+    handler: src/controllers/AuthenticationController.authenticate
     events:
       - http:
           method: post

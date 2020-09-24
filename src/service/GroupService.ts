@@ -38,6 +38,10 @@ export class GroupService extends EntityService {
             throw new InternalServerError(e.message);
         }
     }
+    async add(group: Group): Promise<Group> {
+        super.add(group);
+        return group;
+    }
 
     async delete(client: string, id: string): Promise<void> {
         return super.deleteImpl(client, id, DB.GROUP_TYPE_SUFFIX);

@@ -66,13 +66,14 @@ export class UserService extends EntityService {
         }
     }
 
-    async add(entity: User): Promise<void> {
-        const user = this.getByUsername(entity.client, entity.username);
+    async add(entity: User): Promise<User> {
+        const user = await this.getByUsername(entity.client, entity.username);
         if (user !== null) {
             throw new BadRequest('User already exist.');
         }
         entity.populateGroups(await this.getUserGroups(entity));
-        return super.add(entity);
+        super.add(entity);
+        return entity;
     }
 
     async modify(entity: User): Promise<void> {

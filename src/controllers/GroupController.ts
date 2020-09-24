@@ -9,6 +9,9 @@ import { GroupResponse } from '../model/response/GroupResponse';
 import { UserService } from '../service/UserService';
 import { PermissionsUtils } from '../Utils/PermissionsUtils';
 
+const NO_CONTENT = 'No content.';
+const CREATED = 'Created';
+
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
         const databaseAccessor = new DatabaseAccessor();
@@ -47,10 +50,8 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const client = RequestUtils.bindClient(event);
 
                 const groups = await groupService.getAll(client);
-                const responseBody = groups.map(
-                    group => new GroupResponse(group.client, group.entity, group.permissions),
-                );
-                return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
+                const responseBody = groups.map(group => GroupFactory.toResponse(group));
+                return RequestUtils.buildResponseWithBody(responseBody);
             },
         );
     } catch (e) {
@@ -76,8 +77,9 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                 const item = RequestUtils.parse(event.body, GroupDto);
                 const group = GroupFactory.fromDtoNew(client, item);
 
-                await groupService.add(group);
-                return RequestUtils.buildResponse('No content.', 204);
+                const addedGroup = await groupService.add(group);
+                const responseBody = GroupFactory.toResponse(addedGroup);
+                return RequestUtils.buildResponseWithBody(responseBody, CREATED, 201);
             },
         );
     } catch (e) {
@@ -105,7 +107,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const group = GroupFactory.fromDto(client, id, item);
 
                 await groupService.modify(group);
-                return RequestUtils.buildResponse('No content.', 204);
+                return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );
     } catch (e) {
@@ -127,7 +129,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const id = RequestUtils.bindId(event);
 
                 await groupService.delete(client, id);
-                return RequestUtils.buildResponse('No content', 204);
+                return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );
     } catch (e) {

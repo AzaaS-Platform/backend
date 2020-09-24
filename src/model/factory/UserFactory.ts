@@ -4,6 +4,7 @@ import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
 import { User } from '../User';
 import { UserDto } from '../dto/UserDto';
 import { PasswordUtils } from '../../Utils/PasswordUtils';
+import { UserResponse } from '../response/UserResponse';
 
 export class UserFactory {
     static fromDto(client: string, id: string, user: UserDto): User {
@@ -37,6 +38,11 @@ export class UserFactory {
             UserFactory.getGroupsArray(item),
             item.get(DB.IS_ADMIN),
         );
+    }
+
+    static toResponse(user: User | null): UserResponse | any {
+        if (user === null) return {};
+        return new UserResponse(user.client, user.entity, user.username, user.groups);
     }
 
     private static getGroupsArray(item: DbItem): Array<string> {

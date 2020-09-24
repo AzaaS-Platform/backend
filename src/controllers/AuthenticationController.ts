@@ -8,7 +8,7 @@ import { CredentialsDto } from '../model/dto/CredentialsDto';
 import { BadRequest } from '../error/BadRequest';
 import { AuthorizeRequest } from '../model/dto/AuthorizeRequest';
 
-export const getToken: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+export const authenticate: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
         const databaseAccessor = new DatabaseAccessor();
         const groupService = new GroupService(databaseAccessor);
@@ -27,11 +27,9 @@ export const getToken: APIGatewayProxyHandler = async (event, _context): Promise
         }
 
         const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password);
-        return RequestUtils.buildResponseWithBody(
-            JSON.stringify({
-                token: jwt,
-            }),
-        );
+        return RequestUtils.buildResponseWithBody({
+            token: jwt,
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }

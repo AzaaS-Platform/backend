@@ -3,6 +3,7 @@ import { v4 as UUID } from 'uuid';
 import { GroupDto } from '../dto/GroupDto';
 import { DbItem } from '../../database/DbItem';
 import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
+import { GroupResponse } from '../response/GroupResponse';
 
 export class GroupFactory {
     static fromDto(client: string, id: string, group: GroupDto): Group {
@@ -15,6 +16,11 @@ export class GroupFactory {
 
     static fromDbItem(item: DbItem): Group {
         return new Group(item.get(DB.CLIENT), item.get(DB.ENTITY), GroupFactory.getPermissionsArray(item));
+    }
+
+    static toResponse(group: Group | null): Group | any {
+        if (group === null) return {};
+        return new GroupResponse(group?.client, group?.entity, group?.permissions);
     }
 
     private static getPermissionsArray(item: DbItem): Array<string> {
