@@ -36,6 +36,7 @@ export class PermissionsUtils {
                 throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
             }
             jwt.verify(token, user.passwordHash);
+            //TODO: permissions matcher.
             return user.isAdmin;
         } catch (error) {
             if (error instanceof TokenExpiredError) {
