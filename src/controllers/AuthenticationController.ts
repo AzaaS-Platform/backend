@@ -50,7 +50,7 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         const token = RequestUtils.extractJWTFromHeader(event.headers);
 
         const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
-        const isAuthorized = await authenticationService.authorizeUser(
+        const isAuthorized = await authenticationService.checkPermissionsForUser(
             client,
             token,
             authorizeRequest.requiredPermissions ?? [],
