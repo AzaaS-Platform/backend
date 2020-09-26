@@ -5,6 +5,8 @@ import { BadRequest } from '../error/BadRequest';
 import { JWTPayloadFactory } from '../model/factory/JWTPayloadFactory';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { HttpError } from '../error/HttpError';
+import { User } from '../model/User';
+import { v4 as UUID } from 'uuid';
 
 export class AuthenticationService {
     private INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
@@ -21,8 +23,7 @@ export class AuthenticationService {
         }
         const payload = JWTPayloadFactory.from(client, user.entity);
 
-        //Password hash used as a unique user secret, KISS, or whatever.
-        return jwt.sign({ payload }, user.passwordHash, { expiresIn: this.TOKEN_EXPIRATION_TIME });
+        return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
     }
 
     public async checkPermissionsForUser(
@@ -31,12 +32,9 @@ export class AuthenticationService {
         permissionRequired: Array<string>,
     ): Promise<boolean> {
         try {
-            const payload = JWTPayloadFactory.fromToken(token);
-            const user = await this.userService.getByKey(client, payload.usr);
-            if (user === null) {
-                throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
-            }
-            jwt.verify(token, user.passwordHash);
+            const user = await this.getUserFromToken(client, token);
+            jwt.verify(token, user.JWTSecret as string);
+
             //TODO: permissions matcher.
             return permissionRequired.every(permission =>
                 user.groupObjects.flatMap(group => group.permissions).includes(permission),
@@ -49,5 +47,47 @@ export class AuthenticationService {
             }
             throw error;
         }
+    }
+
+    public async invalidateToken(client: string, token: string): Promise<void> {
+        try {
+            const user = await this.getUserFromToken(client, token);
+            jwt.verify(token, user.JWTSecret as string);
+            user.JWTSecret = UUID(); // create a new secret, invalidates all existing tokens.
+            await this.userService.modify(user);
+        } catch (error) {
+            if (error instanceof TokenExpiredError) {
+                throw new HttpError(403, this.TOKEN_EXPIRED);
+            } else if (error instanceof JsonWebTokenError) {
+                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+            }
+            throw error;
+        }
+    }
+
+    public async refreshToken(client: string, token: string): Promise<string> {
+        try {
+            const user = await this.getUserFromToken(client, token);
+            jwt.verify(token, user.JWTSecret as string);
+
+            const payload = JWTPayloadFactory.from(client, user.entity);
+            return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
+        } catch (error) {
+            if (error instanceof TokenExpiredError) {
+                throw new HttpError(403, this.TOKEN_EXPIRED);
+            } else if (error instanceof JsonWebTokenError) {
+                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+            }
+            throw error;
+        }
+    }
+
+    private async getUserFromToken(client: string, token: string): Promise<User> {
+        const payload = JWTPayloadFactory.fromToken(token);
+        const user = await this.userService.getByKey(client, payload.usr);
+        if (user === null) {
+            throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
+        }
+        return user;
     }
 }

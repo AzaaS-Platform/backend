@@ -172,3 +172,23 @@ functions:
             parameters:
               paths:
                 client: true
+  invalidateToken:
+    handler: src/controllers/AuthenticationController.invalidate
+    events:
+      - http:
+          method: get
+          path: token/invalidate/{client}
+          request:
+            parameters:
+              paths:
+                client: true
+  refreshToken:
+    handler: src/controllers/AuthenticationController.refresh
+    events:
+      - http:
+          method: get
+          path: token/{client}
+          request:
+            parameters:
+              paths:
+                client: true

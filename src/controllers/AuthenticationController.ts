@@ -8,6 +8,16 @@ import { CredentialsDto } from '../model/dto/CredentialsDto';
 import { BadRequest } from '../error/BadRequest';
 import { AuthorizeRequest } from '../model/dto/AuthorizeRequest';
 
+const BODY_CANNOT_BE_BLANK_ERROR = 'Request body cannot be blank.';
+const MISSING_CREDENTIALS_ERROR = 'Missing credentials.';
+const AUTHORIZED_MSG = 'Authorized.';
+const UNAUTHORIZED_MSG = 'Unauthorized.';
+const TOKEN_INVALIDATED_MSG = 'Token invalidated.';
+
+/**
+ * @httpMethod POST
+ * Returns Json Web Token if user credentials are correct. User may use JWT to authorize himself when making future requests.
+ */
 export const authenticate: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
         const databaseAccessor = new DatabaseAccessor();
@@ -16,14 +26,14 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
         const authenticationService = new AuthenticationService(userService);
 
         if (event.body === null) {
-            throw new BadRequest('Request body cannot be blank.');
+            throw new BadRequest(BODY_CANNOT_BE_BLANK_ERROR);
         }
 
         const client = RequestUtils.bindClient(event);
 
         const item = RequestUtils.parse(event.body, CredentialsDto);
         if (item.username === null || item.password === null) {
-            throw new BadRequest('Missing credentials.');
+            throw new BadRequest(MISSING_CREDENTIALS_ERROR);
         }
 
         const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password);
@@ -34,7 +44,12 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
         return RequestUtils.handleError(e);
     }
 };
-// POST with Authorization header
+
+/**
+ * @httpMethod POST
+ * @Authorization Required
+ * Returns true if user sending a request has permissions for the requested resource, false otherwise.
+ */
 export const authorize: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
         const databaseAccessor = new DatabaseAccessor();
@@ -43,7 +58,7 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         const authenticationService = new AuthenticationService(userService);
 
         if (event.body === null) {
-            throw new BadRequest('Request body cannot be blank.');
+            throw new BadRequest(BODY_CANNOT_BE_BLANK_ERROR);
         }
 
         const client = RequestUtils.bindClient(event);
@@ -57,10 +72,54 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         );
 
         if (isAuthorized) {
-            return RequestUtils.buildResponse('Authorized.', 200);
+            return RequestUtils.buildResponse(AUTHORIZED_MSG, 200);
         } else {
-            return RequestUtils.buildResponse('Unauthorized.', 401);
+            return RequestUtils.buildResponse(UNAUTHORIZED_MSG, 401);
         }
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};
+
+/**
+ * @httpMethod GET
+ * @Authorization Required
+ * Invalidates all existing tokens of user making a request.
+ */
+export const invalidate: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+        const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
+
+        const client = RequestUtils.bindClient(event);
+        const token = RequestUtils.extractJWTFromHeader(event.headers);
+        await authenticationService.invalidateToken(client, token);
+        return RequestUtils.buildResponse(TOKEN_INVALIDATED_MSG);
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};
+
+/**
+ * @httpMethod GET
+ * @Authorization Required
+ * Returns a new Json Web Token, when currently passed is correct.
+ */
+export const refresh: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+        const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
+
+        const client = RequestUtils.bindClient(event);
+        const token = RequestUtils.extractJWTFromHeader(event.headers);
+        const jwt = await authenticationService.refreshToken(client, token);
+        return RequestUtils.buildResponseWithBody({
+            token: jwt,
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }

@@ -26,6 +26,9 @@ export class UserFactory {
             PasswordUtils.hash(user.password),
             user.groups as Array<string>,
             false,
+            null,
+            UUID(),
+            UUID(),
         );
     }
 
@@ -37,6 +40,9 @@ export class UserFactory {
             item.get(DB.PASSWORD_HASH),
             UserFactory.getGroupsArray(item),
             item.get(DB.IS_ADMIN),
+            null,
+            item.get(DB.JWT_SECRET),
+            item.get(DB.MFA_SECRET),
         );
     }
 

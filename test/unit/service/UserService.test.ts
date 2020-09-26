@@ -34,6 +34,8 @@ const EMPTY_USER_DATA = new DbItem({
     username: 'username',
     passwordHash: 'password',
     isAdmin: false,
+    jwtSecret: null,
+    mfaSecret: null,
 });
 const EMPTY_USER = new User(
     CLIENT_HASH,
@@ -53,6 +55,8 @@ const MULTIPLE_USER_DATA = new DbItem({
     passwordHash: 'password',
     isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH),
+    jwtSecret: null,
+    mfaSecret: null,
 });
 const MULTIPLE_USER = new User(
     CLIENT_HASH,
@@ -75,6 +79,8 @@ const BROKEN_USER_DATA = new DbItem({
     passwordHash: 'password',
     isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH, NON_EXISTING_GROUP_HASH),
+    jwtSecret: null,
+    mfaSecret: null,
 });
 
 const MOCK_GET_ITEM_BY_KEY = async (

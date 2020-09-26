@@ -11,6 +11,7 @@ const USER_ID = 'test-user';
 const USERNAME = 'username';
 const PASSWORD = 'password';
 const PASSWORD_HASH = PasswordUtils.hash(PASSWORD);
+const JWT_SECRET = 'jwt-secret';
 
 beforeEach(() => {
     process.env.STAGE = 'test';
@@ -25,7 +26,7 @@ test('authentication service returns token when user passes correct credentials'
     const authenticationService = new AuthenticationService(userService);
 
     userService.getByUsername = async (_client, _username): Promise<User> => {
-        return { entity: USER_ID, passwordHash: PASSWORD_HASH } as User;
+        return { entity: USER_ID, passwordHash: PASSWORD_HASH, JWTSecret: JWT_SECRET } as User;
     };
     const result = await authenticationService.generateTokenForUser(CLIENT_ID, USERNAME, PASSWORD);
 
@@ -40,7 +41,7 @@ test('authentication service throws incorrect credentials error when user passes
     const authenticationService = new AuthenticationService(userService);
 
     userService.getByUsername = async (_client, _username): Promise<User> => {
-        return { entity: USER_ID, passwordHash: PASSWORD_HASH } as User;
+        return { entity: USER_ID, passwordHash: PASSWORD_HASH, JWTSecret: JWT_SECRET } as User;
     };
     const result = authenticationService.generateTokenForUser(CLIENT_ID, USERNAME, 'SomeBadPassword');
 

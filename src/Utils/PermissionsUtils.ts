@@ -35,7 +35,7 @@ export class PermissionsUtils {
             if (user === null) {
                 throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
             }
-            jwt.verify(token, user.passwordHash);
+            jwt.verify(token, user.JWTSecret as string);
             return user.isAdmin;
         } catch (error) {
             if (error instanceof TokenExpiredError) {
