@@ -51,6 +51,7 @@ functions:
       - http:
           method: get
           path: groups/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -62,6 +63,7 @@ functions:
       - http:
           method: get
           path: groups/{client}
+          cors: true
           request:
             parameters:
               paths:
@@ -72,6 +74,7 @@ functions:
       - http:
           method: post
           path: groups/{client}
+          cors: true
           request:
             parameters:
               paths:
@@ -82,6 +85,7 @@ functions:
       - http:
           method: put
           path: groups/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -93,6 +97,7 @@ functions:
       - http:
           method: delete
           path: groups/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -105,6 +110,7 @@ functions:
       - http:
           method: get
           path: users/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -116,6 +122,7 @@ functions:
       - http:
           method: get
           path: users/{client}
+          cors: true
           request:
             parameters:
               paths:
@@ -126,6 +133,7 @@ functions:
       - http:
           method: post
           path: users/{client}
+          cors: true
           request:
             parameters:
               paths:
@@ -136,6 +144,7 @@ functions:
       - http:
           method: put
           path: users/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -147,6 +156,7 @@ functions:
       - http:
           method: delete
           path: users/{client}/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -158,6 +168,7 @@ functions:
       - http:
           method: post
           path: token/{client}
+          cors: true
           request:
             parameters:
               paths:
@@ -168,15 +179,18 @@ functions:
       - http:
           method: post
           path: authorize
+          cors: true
   invalidateToken:
     handler: src/controllers/AuthenticationController.invalidate
     events:
       - http:
           method: get
           path: token/invalidate
+          cors: true
   refreshToken:
     handler: src/controllers/AuthenticationController.refresh
     events:
       - http:
           method: get
           path: token
+          cors: true

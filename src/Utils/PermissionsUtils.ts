@@ -7,6 +7,7 @@ import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 export class PermissionsUtils {
     private static INVALID_JSON_WEB_TOKEN = 'Invalid Json Web Token. Authorization not given.';
     private static TOKEN_EXPIRED = 'Expired Json Web Token. Authorization not given.';
+    private static FORBIDDEN = 'Forbidden. Only administrators are allowed to change the configuration.';
 
     /**
      * Checks for admin permissions and then calls the callback function.
@@ -20,7 +21,7 @@ export class PermissionsUtils {
         callback: () => T,
     ): Promise<T> {
         if (!(await this.checkAdminPermissions(jwt, userService))) {
-            throw new HttpError(401, 'Unauthorized.');
+            throw new HttpError(403, this.FORBIDDEN);
         }
         return callback();
     }
@@ -39,9 +40,9 @@ export class PermissionsUtils {
             return user.isAdmin;
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                throw new HttpError(403, this.TOKEN_EXPIRED);
+                throw new HttpError(401, this.TOKEN_EXPIRED);
             } else if (error instanceof JsonWebTokenError) {
-                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+                throw new HttpError(401, this.INVALID_JSON_WEB_TOKEN);
             }
             throw error;
         }

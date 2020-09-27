@@ -45,7 +45,7 @@ export class RequestUtils {
             body: JSON.stringify({
                 statusCode: code,
                 message: code !== 500 ? error.message : 'Internal server error.',
-                error: process.env.STAGE !== 'prod' ? error.stack : typeof error,
+                error: process.env.STAGE !== 'prod' ? error.stack : error.name,
             }),
         };
     }
