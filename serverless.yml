@@ -167,7 +167,7 @@ functions:
     events:
       - http:
           method: post
-          path: token/{client}
+          path: token
           cors: true
           request:
             parameters:
