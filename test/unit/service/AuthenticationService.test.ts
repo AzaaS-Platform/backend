@@ -2,7 +2,7 @@ import { DatabaseAccessor } from '../../../src/database/DatabaseAccessor';
 import { GroupService } from '../../../src/service/GroupService';
 import { UserService } from '../../../src/service/UserService';
 import { AuthenticationService } from '../../../src/service/AuthenticationService';
-import { PasswordUtils } from '../../../src/Utils/PasswordUtils';
+import { PasswordUtils } from '../../../src/utils/PasswordUtils';
 import { User } from '../../../src/model/User';
 import { BadRequest } from '../../../src/error/BadRequest';
 

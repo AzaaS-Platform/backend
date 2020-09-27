@@ -83,7 +83,7 @@ export class RequestUtils {
         }
     }
 
-    static parse<T extends Record<string, any>>(payload: string, schema: new () => T): T {
+    static parse<T extends Record<string, any>>(payload: string, schema: new () => T, strict = true): T {
         const object = JSON.parse(payload);
 
         const allowed = [this.CLIENT, this.ID];
@@ -93,7 +93,7 @@ export class RequestUtils {
         const missing = schemaKeys.filter(it => !payloadKeys.includes(it));
         const unrecognized = payloadKeys.filter(it => !schemaKeys.includes(it));
 
-        if (missing.length === 0 && unrecognized.length === 0) {
+        if ((!strict || missing.length === 0) && unrecognized.length === 0) {
             return object;
         } else {
             let error = '';

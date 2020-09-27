@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import { RequestUtils } from '../Utils/RequestUtils';
+import { RequestUtils } from '../utils/RequestUtils';
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
 import { BadRequest } from '../error/BadRequest';
@@ -7,10 +7,11 @@ import { GroupFactory } from '../model/factory/GroupFactory';
 import { GroupDto } from '../model/dto/GroupDto';
 import { GroupResponse } from '../model/response/GroupResponse';
 import { UserService } from '../service/UserService';
-import { PermissionsUtils } from '../Utils/PermissionsUtils';
+import { PermissionsUtils } from '../utils/PermissionsUtils';
 
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
+const BODY_CAN_NOT_BE_BLANK = 'Request body cannot be blank';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -71,7 +72,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
             async () => {
                 const client = RequestUtils.bindClient(event);
                 if (event.body === null) {
-                    throw new BadRequest('Request body cannot be blank.');
+                    throw new BadRequest(BODY_CAN_NOT_BE_BLANK);
                 }
 
                 const item = RequestUtils.parse(event.body, GroupDto);
@@ -100,7 +101,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const client = RequestUtils.bindClient(event);
                 const id = RequestUtils.bindId(event);
                 if (event.body === null) {
-                    throw new BadRequest('Request body cannot be blank.');
+                    throw new BadRequest(BODY_CAN_NOT_BE_BLANK);
                 }
 
                 const item = RequestUtils.parse(event.body, GroupDto);
@@ -132,20 +133,6 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
                 return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );
-    } catch (e) {
-        return RequestUtils.handleError(e);
-    }
-};
-
-export const test: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
-    try {
-        if (event.body === null) {
-            throw new BadRequest('Request body cannot be blank.');
-        }
-
-        RequestUtils.parse(event.body, GroupDto);
-
-        return RequestUtils.buildResponse("Ok. It's a test endpoint.", 200);
     } catch (e) {
         return RequestUtils.handleError(e);
     }

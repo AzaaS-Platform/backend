@@ -1,12 +1,12 @@
 import { UserService } from './UserService';
 import * as jwt from 'jsonwebtoken';
-import { PasswordUtils } from '../Utils/PasswordUtils';
-import { BadRequest } from '../error/BadRequest';
+import { PasswordUtils } from '../utils/PasswordUtils';
 import { JWTPayloadFactory } from '../model/factory/JWTPayloadFactory';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
-import { HttpError } from '../error/HttpError';
 import { User } from '../model/User';
 import { v4 as UUID } from 'uuid';
+import { Unauthorized } from '../error/Unauthorized';
+import { Forbidden } from '../error/Forbidden';
 
 export class AuthenticationService {
     private INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
@@ -19,7 +19,7 @@ export class AuthenticationService {
     public async generateTokenForUser(client: string, username: string, password: string): Promise<string> {
         const user = await this.userService.getByUsername(client, username);
         if (user === null || !PasswordUtils.validate(password, user.passwordHash)) {
-            throw new BadRequest(this.INCORRECT_CREDENTIALS_ERROR);
+            throw new Unauthorized(this.INCORRECT_CREDENTIALS_ERROR);
         }
         const payload = JWTPayloadFactory.from(client, user.entity);
 
@@ -37,9 +37,9 @@ export class AuthenticationService {
             );
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                throw new HttpError(403, this.TOKEN_EXPIRED);
+                throw new Forbidden(this.TOKEN_EXPIRED);
             } else if (error instanceof JsonWebTokenError) {
-                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+                throw new Forbidden(this.INVALID_JSON_WEB_TOKEN);
             }
             throw error;
         }
@@ -53,9 +53,9 @@ export class AuthenticationService {
             await this.userService.modify(user);
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                throw new HttpError(403, this.TOKEN_EXPIRED);
+                throw new Unauthorized(this.TOKEN_EXPIRED);
             } else if (error instanceof JsonWebTokenError) {
-                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+                throw new Unauthorized(this.INVALID_JSON_WEB_TOKEN);
             }
             throw error;
         }
@@ -70,9 +70,9 @@ export class AuthenticationService {
             return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                throw new HttpError(403, this.TOKEN_EXPIRED);
+                throw new Unauthorized(this.TOKEN_EXPIRED);
             } else if (error instanceof JsonWebTokenError) {
-                throw new HttpError(403, this.INVALID_JSON_WEB_TOKEN);
+                throw new Unauthorized(this.INVALID_JSON_WEB_TOKEN);
             }
             throw error;
         }

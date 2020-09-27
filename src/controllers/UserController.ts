@@ -1,15 +1,19 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
-import { RequestUtils } from '../Utils/RequestUtils';
+import { RequestUtils } from '../utils/RequestUtils';
 import { UserService } from '../service/UserService';
 import { BadRequest } from '../error/BadRequest';
 import { UserDto } from '../model/dto/UserDto';
 import { UserFactory } from '../model/factory/UserFactory';
-import { PermissionsUtils } from '../Utils/PermissionsUtils';
+import { PermissionsUtils } from '../utils/PermissionsUtils';
+import { PasswordUtils } from '../utils/PasswordUtils';
+import { NotFound } from '../error/NotFound';
 
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
+const REQUEST_CAN_NOT_BE_BLANK = 'Request body cannot be blank.';
+const USER_DOES_NOT_EXIST = "User doesn't exist.";
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -67,7 +71,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
             userService,
             async () => {
                 if (event.body === null) {
-                    throw new BadRequest('Request body cannot be blank.');
+                    throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
                 }
                 const client = RequestUtils.bindClient(event);
 
@@ -94,14 +98,23 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
             userService,
             async () => {
                 if (event.body === null) {
-                    throw new BadRequest('Request body cannot be blank.');
+                    throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
                 }
                 const client = RequestUtils.bindClient(event);
                 const id = RequestUtils.bindId(event);
 
-                const item = RequestUtils.parse(event.body, UserDto);
-                const user = UserFactory.fromDto(client, id, item);
-                await userService.modify(user);
+                const item: UserDto = RequestUtils.parse(event.body, UserDto, false);
+                const user = await userService.getByKey(client, id);
+                if (user === null) {
+                    throw new NotFound(USER_DOES_NOT_EXIST);
+                }
+
+                //Modify workaround for now.
+                const modifiedUser = Object.assign(user, item, {
+                    passwordHash: item.password != null ? PasswordUtils.hash(item.password) : user?.passwordHash,
+                });
+
+                await userService.modify(modifiedUser);
                 return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );

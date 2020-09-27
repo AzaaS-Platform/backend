@@ -3,15 +3,16 @@ import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
 import { UserService } from '../service/UserService';
 import { AuthenticationService } from '../service/AuthenticationService';
-import { RequestUtils } from '../Utils/RequestUtils';
+import { RequestUtils } from '../utils/RequestUtils';
 import { CredentialsDto } from '../model/dto/CredentialsDto';
 import { BadRequest } from '../error/BadRequest';
 import { AuthorizeRequest } from '../model/dto/AuthorizeRequest';
+import { Forbidden } from '../error/Forbidden';
 
 const BODY_CANNOT_BE_BLANK_ERROR = 'Request body cannot be blank.';
 const MISSING_CREDENTIALS_ERROR = 'Missing credentials.';
-const AUTHORIZED_MSG = 'Authorized.';
-const UNAUTHORIZED_MSG = 'Unauthorized.';
+const ACCESS_GRANTED_MSG = 'User has access to this resource.';
+const FORBIDDEN_MSG = 'User has no sufficient permissions to access this resource.';
 const TOKEN_INVALIDATED_MSG = 'Token invalidated.';
 
 /**
@@ -64,15 +65,15 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         const token = RequestUtils.extractJWTFromHeader(event.headers);
 
         const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
-        const isAuthorized = await authenticationService.checkPermissionsForUser(
+        const userHasPermissions = await authenticationService.checkPermissionsForUser(
             token,
             authorizeRequest.requiredPermissions ?? [],
         );
 
-        if (isAuthorized) {
-            return RequestUtils.buildResponse(AUTHORIZED_MSG, 200);
+        if (userHasPermissions) {
+            return RequestUtils.buildResponse(ACCESS_GRANTED_MSG, 200);
         } else {
-            return RequestUtils.buildResponse(UNAUTHORIZED_MSG, 401);
+            throw new Forbidden(FORBIDDEN_MSG);
         }
     } catch (e) {
         return RequestUtils.handleError(e);

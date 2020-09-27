@@ -3,7 +3,7 @@ import { DbItem } from '../../database/DbItem';
 import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
 import { User } from '../User';
 import { UserDto } from '../dto/UserDto';
-import { PasswordUtils } from '../../Utils/PasswordUtils';
+import { PasswordUtils } from '../../utils/PasswordUtils';
 import { UserResponse } from '../response/UserResponse';
 
 export class UserFactory {
