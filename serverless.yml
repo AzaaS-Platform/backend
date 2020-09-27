@@ -167,28 +167,16 @@ functions:
     events:
       - http:
           method: post
-          path: authorize/{client}
-          request:
-            parameters:
-              paths:
-                client: true
+          path: authorize
   invalidateToken:
     handler: src/controllers/AuthenticationController.invalidate
     events:
       - http:
           method: get
-          path: token/invalidate/{client}
-          request:
-            parameters:
-              paths:
-                client: true
+          path: token/invalidate
   refreshToken:
     handler: src/controllers/AuthenticationController.refresh
     events:
       - http:
           method: get
-          path: token/{client}
-          request:
-            parameters:
-              paths:
-                client: true
+          path: token

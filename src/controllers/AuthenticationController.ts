@@ -61,12 +61,10 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
             throw new BadRequest(BODY_CANNOT_BE_BLANK_ERROR);
         }
 
-        const client = RequestUtils.bindClient(event);
         const token = RequestUtils.extractJWTFromHeader(event.headers);
 
         const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
         const isAuthorized = await authenticationService.checkPermissionsForUser(
-            client,
             token,
             authorizeRequest.requiredPermissions ?? [],
         );
@@ -93,9 +91,8 @@ export const invalidate: APIGatewayProxyHandler = async (event, _context): Promi
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        const client = RequestUtils.bindClient(event);
         const token = RequestUtils.extractJWTFromHeader(event.headers);
-        await authenticationService.invalidateToken(client, token);
+        await authenticationService.invalidateToken(token);
         return RequestUtils.buildResponse(TOKEN_INVALIDATED_MSG);
     } catch (e) {
         return RequestUtils.handleError(e);
@@ -114,9 +111,8 @@ export const refresh: APIGatewayProxyHandler = async (event, _context): Promise<
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        const client = RequestUtils.bindClient(event);
         const token = RequestUtils.extractJWTFromHeader(event.headers);
-        const jwt = await authenticationService.refreshToken(client, token);
+        const jwt = await authenticationService.refreshToken(token);
         return RequestUtils.buildResponseWithBody({
             token: jwt,
         });

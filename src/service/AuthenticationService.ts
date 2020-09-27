@@ -26,13 +26,9 @@ export class AuthenticationService {
         return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
     }
 
-    public async checkPermissionsForUser(
-        client: string,
-        token: string,
-        permissionRequired: Array<string>,
-    ): Promise<boolean> {
+    public async checkPermissionsForUser(token: string, permissionRequired: Array<string>): Promise<boolean> {
         try {
-            const user = await this.getUserFromToken(client, token);
+            const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
             //TODO: permissions matcher.
@@ -49,9 +45,9 @@ export class AuthenticationService {
         }
     }
 
-    public async invalidateToken(client: string, token: string): Promise<void> {
+    public async invalidateToken(token: string): Promise<void> {
         try {
-            const user = await this.getUserFromToken(client, token);
+            const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
             user.JWTSecret = UUID(); // create a new secret, invalidates all existing tokens.
             await this.userService.modify(user);
@@ -65,12 +61,12 @@ export class AuthenticationService {
         }
     }
 
-    public async refreshToken(client: string, token: string): Promise<string> {
+    public async refreshToken(token: string): Promise<string> {
         try {
-            const user = await this.getUserFromToken(client, token);
+            const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
-            const payload = JWTPayloadFactory.from(client, user.entity);
+            const payload = JWTPayloadFactory.from(user.client, user.entity);
             return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
         } catch (error) {
             if (error instanceof TokenExpiredError) {
@@ -82,9 +78,9 @@ export class AuthenticationService {
         }
     }
 
-    private async getUserFromToken(client: string, token: string): Promise<User> {
+    private async getUserFromToken(token: string): Promise<User> {
         const payload = JWTPayloadFactory.fromToken(token);
-        const user = await this.userService.getByKey(client, payload.usr);
+        const user = await this.userService.getByKey(payload.clt, payload.usr);
         if (user === null) {
             throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
         }
