@@ -4,7 +4,7 @@ import { UserService } from '../../../src/service/UserService';
 import { AuthenticationService } from '../../../src/service/AuthenticationService';
 import { PasswordUtils } from '../../../src/utils/PasswordUtils';
 import { User } from '../../../src/model/User';
-import { BadRequest } from '../../../src/error/BadRequest';
+import { Unauthorized } from '../../../src/error/Unauthorized';
 
 const CLIENT_ID = 'test-client';
 const USER_ID = 'test-user';
@@ -45,5 +45,18 @@ test('authentication service throws incorrect credentials error when user passes
     };
     const result = authenticationService.generateTokenForUser(CLIENT_ID, USERNAME, 'SomeBadPassword');
 
-    expect(result).rejects.toEqual(new BadRequest('Incorrect credentials'));
+    await expect(result).rejects.toEqual(new Unauthorized('Incorrect credentials'));
+});
+
+test('authentication service throws incorrect credentials error when user doesnt exist', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    userService.getByUsername = async (_client, _username): Promise<User | null> => null;
+    const result = authenticationService.generateTokenForUser(CLIENT_ID, USERNAME, PASSWORD);
+
+    await expect(result).rejects.toEqual(new Unauthorized('Incorrect credentials'));
 });

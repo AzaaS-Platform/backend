@@ -1,9 +1,3 @@
-export interface ObfuscatedJWTPayload {
-    clt: string;
-    usr: string;
-    prm: string;
-}
-
 export class JWTPayload {
     clt: string;
     usr: string;
