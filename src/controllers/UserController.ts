@@ -13,7 +13,8 @@ import { NotFound } from '../error/NotFound';
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
 const REQUEST_CAN_NOT_BE_BLANK = 'Request body cannot be blank.';
-const USER_DOES_NOT_EXIST = "User doesn't exist.";
+const USER_NOT_FOUND = 'User was not found.';
+const USERS_NOT_FOUND = 'Users were not found.';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -51,6 +52,9 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const client = RequestUtils.bindClient(event);
 
                 const users = await userService.getAll(client);
+                if (users.length === 0) {
+                    throw new NotFound(USERS_NOT_FOUND);
+                }
                 const responseBody = users.map(user => UserFactory.toResponse(user));
                 return RequestUtils.buildResponseWithBody(responseBody);
             },
@@ -106,7 +110,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const item: UserDto = RequestUtils.parse(event.body, UserDto, false);
                 const user = await userService.getByKey(client, id);
                 if (user === null) {
-                    throw new NotFound(USER_DOES_NOT_EXIST);
+                    throw new NotFound(USER_NOT_FOUND);
                 }
 
                 //Modify workaround for now.

@@ -8,10 +8,13 @@ import { GroupDto } from '../model/dto/GroupDto';
 import { GroupResponse } from '../model/response/GroupResponse';
 import { UserService } from '../service/UserService';
 import { PermissionsUtils } from '../utils/PermissionsUtils';
+import { NotFound } from '../error/NotFound';
 
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
 const BODY_CAN_NOT_BE_BLANK = 'Request body cannot be blank';
+const GROUPS_NOT_FOUND = 'Groups were not found.';
+const GROUP_NOT_FOUND = 'Group was not found.';
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -27,9 +30,11 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                 const id = RequestUtils.bindId(event);
 
                 const group = await groupService.getByKey(client, id);
+                if (group === null) {
+                    throw new NotFound(GROUP_NOT_FOUND);
+                }
 
-                const responseBody =
-                    group === null ? {} : new GroupResponse(group?.client, group?.entity, group?.permissions);
+                const responseBody = new GroupResponse(group?.client, group?.entity, group?.permissions);
                 return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
             },
         );
@@ -51,6 +56,9 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
                 const client = RequestUtils.bindClient(event);
 
                 const groups = await groupService.getAll(client);
+                if (groups.length === 0) {
+                    throw new NotFound(GROUPS_NOT_FOUND);
+                }
                 const responseBody = groups.map(group => GroupFactory.toResponse(group));
                 return RequestUtils.buildResponseWithBody(responseBody);
             },
