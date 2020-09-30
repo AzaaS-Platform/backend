@@ -1,6 +1,6 @@
-import { EntityResponse } from './EntityResponse';
+import { EntityResponseDto } from './EntityResponseDto';
 
-export class UserResponse extends EntityResponse {
+export class UserResponseDto extends EntityResponseDto {
     username: string;
     groups: Array<string>;
 

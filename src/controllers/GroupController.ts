@@ -4,8 +4,8 @@ import { DatabaseAccessor } from '../database/DatabaseAccessor';
 import { GroupService } from '../service/GroupService';
 import { BadRequest } from '../error/BadRequest';
 import { GroupFactory } from '../model/factory/GroupFactory';
-import { GroupDto } from '../model/dto/GroupDto';
-import { GroupResponse } from '../model/response/GroupResponse';
+import { GroupRequestDto } from '../model/dto/request/GroupRequestDto';
+import { GroupResponseDto } from '../model/dto/response/GroupResponseDto';
 import { UserService } from '../service/UserService';
 import { PermissionsUtils } from '../utils/PermissionsUtils';
 import { NotFound } from '../error/NotFound';
@@ -34,7 +34,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                     throw new NotFound(GROUP_NOT_FOUND);
                 }
 
-                const responseBody = new GroupResponse(group?.client, group?.entity, group?.permissions);
+                const responseBody = new GroupResponseDto(group?.client, group?.entity, group?.permissions);
                 return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
             },
         );
@@ -83,7 +83,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                     throw new BadRequest(BODY_CAN_NOT_BE_BLANK);
                 }
 
-                const item = RequestUtils.parse(event.body, GroupDto);
+                const item = RequestUtils.parse(event.body, GroupRequestDto);
                 const group = GroupFactory.fromDtoNew(client, item);
 
                 const addedGroup = await groupService.add(group);
@@ -112,10 +112,15 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
                     throw new BadRequest(BODY_CAN_NOT_BE_BLANK);
                 }
 
-                const item = RequestUtils.parse(event.body, GroupDto);
-                const group = GroupFactory.fromDto(client, id, item);
+                const group = groupService.getByKey(client, id);
+                if (group === null) {
+                    throw new NotFound(GROUP_NOT_FOUND);
+                }
 
-                await groupService.modify(group);
+                const item = RequestUtils.parse(event.body, GroupRequestDto);
+                const modifiedGroup = GroupFactory.fromDto(client, id, item);
+
+                await groupService.modify(modifiedGroup);
                 return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
         );

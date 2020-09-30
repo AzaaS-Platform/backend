@@ -4,9 +4,9 @@ import { GroupService } from '../service/GroupService';
 import { UserService } from '../service/UserService';
 import { AuthenticationService } from '../service/AuthenticationService';
 import { RequestUtils } from '../utils/RequestUtils';
-import { CredentialsDto } from '../model/dto/CredentialsDto';
+import { CredentialsRequestDto } from '../model/dto/request/CredentialsRequestDto';
 import { BadRequest } from '../error/BadRequest';
-import { AuthorizeRequest } from '../model/dto/AuthorizeRequest';
+import { AuthorizeRequestDto } from '../model/dto/request/AuthorizeRequestDto';
 import { Forbidden } from '../error/Forbidden';
 
 const BODY_CANNOT_BE_BLANK_ERROR = 'Request body cannot be blank.';
@@ -32,7 +32,7 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
 
         const client = RequestUtils.bindClient(event);
 
-        const item = RequestUtils.parse(event.body, CredentialsDto);
+        const item = RequestUtils.parse(event.body, CredentialsRequestDto);
         if (item.username === null || item.password === null) {
             throw new BadRequest(MISSING_CREDENTIALS_ERROR);
         }
@@ -64,7 +64,7 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
 
         const token = RequestUtils.extractJWTFromHeader(event.headers);
 
-        const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequest);
+        const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequestDto);
         const userHasPermissions = await authenticationService.checkPermissionsForUser(
             token,
             authorizeRequest.requiredPermissions ?? [],

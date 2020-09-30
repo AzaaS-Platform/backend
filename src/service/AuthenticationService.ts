@@ -7,6 +7,7 @@ import { User } from '../model/User';
 import { v4 as UUID } from 'uuid';
 import { Unauthorized } from '../error/Unauthorized';
 import { Forbidden } from '../error/Forbidden';
+import { PermissionsMatcher } from '../utils/PermissionsMatcher';
 
 export class AuthenticationService {
     private INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
@@ -26,14 +27,14 @@ export class AuthenticationService {
         return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
     }
 
-    public async checkPermissionsForUser(token: string, permissionRequired: Array<string>): Promise<boolean> {
+    public async checkPermissionsForUser(token: string, permissionsRequired: Array<string>): Promise<boolean> {
         try {
             const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
-            //TODO: permissions matcher.
-            return permissionRequired.every(permission =>
-                user.groupObjects.flatMap(group => group.permissions).includes(permission),
+            return PermissionsMatcher.match(
+                permissionsRequired,
+                user.groupObjects.flatMap(group => group.permissions),
             );
         } catch (error) {
             if (error instanceof TokenExpiredError) {

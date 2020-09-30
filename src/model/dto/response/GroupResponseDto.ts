@@ -1,6 +1,6 @@
-import { EntityResponse } from './EntityResponse';
+import { EntityResponseDto } from './EntityResponseDto';
 
-export class GroupResponse extends EntityResponse {
+export class GroupResponseDto extends EntityResponseDto {
     permissions: Array<string>;
 
     constructor(client: string, entity: string, permissions: Array<string>) {

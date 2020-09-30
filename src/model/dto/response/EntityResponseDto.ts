@@ -1,4 +1,4 @@
-export abstract class EntityResponse {
+export abstract class EntityResponseDto {
     client: string;
     entity: string;
 

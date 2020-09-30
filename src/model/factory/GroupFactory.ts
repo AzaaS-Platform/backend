@@ -1,16 +1,16 @@
 import { Group } from '../Group';
 import { v4 as UUID } from 'uuid';
-import { GroupDto } from '../dto/GroupDto';
+import { GroupRequestDto } from '../dto/request/GroupRequestDto';
 import { DbItem } from '../../database/DbItem';
 import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
-import { GroupResponse } from '../response/GroupResponse';
+import { GroupResponseDto } from '../dto/response/GroupResponseDto';
 
 export class GroupFactory {
-    static fromDto(client: string, id: string, group: GroupDto): Group {
+    static fromDto(client: string, id: string, group: GroupRequestDto): Group {
         return new Group(client, id, group.permissions as Array<string>);
     }
 
-    static fromDtoNew(client: string, group: GroupDto): Group {
+    static fromDtoNew(client: string, group: GroupRequestDto): Group {
         return new Group(client, UUID(), group.permissions as Array<string>);
     }
 
@@ -20,7 +20,7 @@ export class GroupFactory {
 
     static toResponse(group: Group | null): Group | any {
         if (group === null) return {};
-        return new GroupResponse(group?.client, group?.entity, group?.permissions);
+        return new GroupResponseDto(group?.client, group?.entity, group?.permissions);
     }
 
     private static getPermissionsArray(item: DbItem): Array<string> {

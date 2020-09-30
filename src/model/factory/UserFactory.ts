@@ -2,12 +2,12 @@ import { v4 as UUID } from 'uuid';
 import { DbItem } from '../../database/DbItem';
 import { DbMappingConstants as DB } from '../../database/DbMappingConstants';
 import { User } from '../User';
-import { UserDto } from '../dto/UserDto';
+import { UserRequestDto } from '../dto/request/UserRequestDto';
 import { PasswordUtils } from '../../utils/PasswordUtils';
-import { UserResponse } from '../response/UserResponse';
+import { UserResponseDto } from '../dto/response/UserResponseDto';
 
 export class UserFactory {
-    static fromDto(client: string, id: string, user: UserDto): User {
+    static fromDto(client: string, id: string, user: UserRequestDto): User {
         return new User(
             client,
             id,
@@ -18,7 +18,7 @@ export class UserFactory {
         );
     }
 
-    static fromDtoNew(client: string, user: UserDto): User {
+    static fromDtoNew(client: string, user: UserRequestDto): User {
         return new User(
             client,
             UUID(),
@@ -46,9 +46,9 @@ export class UserFactory {
         );
     }
 
-    static toResponse(user: User | null): UserResponse | any {
+    static toResponse(user: User | null): UserResponseDto | any {
         if (user === null) return {};
-        return new UserResponse(user.client, user.entity, user.username, user.groups);
+        return new UserResponseDto(user.client, user.entity, user.username, user.groups);
     }
 
     private static getGroupsArray(item: DbItem): Array<string> {
