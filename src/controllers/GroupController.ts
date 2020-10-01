@@ -35,7 +35,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                 }
 
                 const responseBody = new GroupResponseDto(group?.client, group?.entity, group?.permissions);
-                return RequestUtils.buildResponseWithBody(JSON.stringify(responseBody));
+                return RequestUtils.buildResponseWithBody(responseBody);
             },
         );
     } catch (e) {

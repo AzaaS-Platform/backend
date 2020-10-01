@@ -90,7 +90,7 @@ export class RequestUtils {
         const schemaKeys = Object.keys(new schema()).filter(it => !allowed.includes(it));
         const payloadKeys = Object.keys(object).filter(it => !allowed.includes(it));
 
-        const missing = schemaKeys.filter(it => !payloadKeys.includes(it));
+        const missing = schemaKeys.filter(it => !payloadKeys.includes(it) || object[it] == null);
         const unrecognized = payloadKeys.filter(it => !schemaKeys.includes(it));
 
         if ((!strict || missing.length === 0) && unrecognized.length === 0) {
