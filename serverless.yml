@@ -194,3 +194,10 @@ functions:
           method: get
           path: token
           cors: true
+  registerClient:
+    handler: src/controllers/ClientController.register
+    events:
+      - http:
+          method: post
+          path: clients
+          cors: true

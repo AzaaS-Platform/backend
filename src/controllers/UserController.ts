@@ -28,11 +28,13 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
+        const client = RequestUtils.bindClient(event);
+
         return await PermissionsUtils.requireAdminPermissions(
+            client,
             RequestUtils.extractJWTFromHeader(event.headers),
             userService,
             async () => {
-                const client = RequestUtils.bindClient(event);
                 const id = RequestUtils.bindId(event);
 
                 const user = await userService.getByKey(client, id);
@@ -51,12 +53,13 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
+        const client = RequestUtils.bindClient(event);
+
         return await PermissionsUtils.requireAdminPermissions(
+            client,
             RequestUtils.extractJWTFromHeader(event.headers),
             userService,
             async () => {
-                const client = RequestUtils.bindClient(event);
-
                 const users = await userService.getAll(client);
                 if (users.length === 0) {
                     throw new NotFound(USERS_NOT_FOUND);
@@ -76,15 +79,16 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
+        const client = RequestUtils.bindClient(event);
+
         return await PermissionsUtils.requireAdminPermissions(
+            client,
             RequestUtils.extractJWTFromHeader(event.headers),
             userService,
             async () => {
                 if (event.body === null) {
                     throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
                 }
-                const client = RequestUtils.bindClient(event);
-
                 const item = RequestUtils.parse(event.body, UserRequestDto);
                 const user = UserFactory.fromDtoNew(client, item);
 
@@ -107,14 +111,16 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
+        const client = RequestUtils.bindClient(event);
+
         return await PermissionsUtils.requireAdminPermissions(
+            client,
             RequestUtils.extractJWTFromHeader(event.headers),
             userService,
             async () => {
                 if (event.body === null) {
                     throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
                 }
-                const client = RequestUtils.bindClient(event);
                 const id = RequestUtils.bindId(event);
 
                 const item: UserRequestDto = RequestUtils.parse(event.body, UserRequestDto, false);
@@ -146,11 +152,13 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
+        const client = RequestUtils.bindClient(event);
+
         return await PermissionsUtils.requireAdminPermissions(
+            client,
             RequestUtils.extractJWTFromHeader(event.headers),
             userService,
             async () => {
-                const client = RequestUtils.bindClient(event);
                 const id = RequestUtils.bindId(event);
 
                 await userService.delete(client, id);

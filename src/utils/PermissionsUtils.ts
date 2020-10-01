@@ -12,15 +12,17 @@ export class PermissionsUtils {
     /**
      * Checks for admin permissions and then calls the callback function.
      * @param jwt JWT object
+     * @param client clientId
      * @param userService
      * @param callback function to call in case of success.
      */
     public static async requireAdminPermissions<T>(
+        client: string,
         jwt: string,
         userService: UserService,
         callback: () => T,
     ): Promise<T> {
-        if (!(await this.checkAdminPermissions(jwt, userService))) {
+        if (!(await this.checkAdminPermissions(client, jwt, userService))) {
             throw new HttpError(403, this.FORBIDDEN);
         }
         return callback();
@@ -29,15 +31,20 @@ export class PermissionsUtils {
     /**
      * Unfortunately it's basically just a copy of AuthenticationService.authorize method.
      */
-    private static async checkAdminPermissions(token: string, userService: UserService): Promise<boolean> {
+    private static async checkAdminPermissions(
+        client: string,
+        token: string,
+        userService: UserService,
+    ): Promise<boolean> {
         try {
             const payload = JWTPayloadFactory.fromToken(token);
             const user = await userService.getByKey(payload.clt, payload.usr);
             if (user === null) {
                 throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
             }
+
             jwt.verify(token, user.JWTSecret as string);
-            return user.isAdmin;
+            return user.isAdmin && user.client == client;
         } catch (error) {
             if (error instanceof TokenExpiredError) {
                 throw new HttpError(401, this.TOKEN_EXPIRED);

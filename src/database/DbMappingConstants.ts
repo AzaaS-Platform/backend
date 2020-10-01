@@ -15,13 +15,18 @@ export class DbMappingConstants {
     public static JWT_SECRET = 'jwtSecret';
     public static MFA_SECRET = 'mfaSecret';
 
+    public static CLIENT_NAME = 'clientName';
+    public static ADMIN_USERS = 'adminUsers';
+
     // schema constants
 
     public static TYPE_SEPARATOR = ':';
 
     public static GROUP_TYPE = 'group';
     public static USER_TYPE = 'user';
+    public static CLIENT_TYPE = 'tenant';
 
     public static GROUP_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.GROUP_TYPE;
     public static USER_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.USER_TYPE;
+    public static CLIENT_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.CLIENT_TYPE;
 }
