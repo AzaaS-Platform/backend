@@ -91,21 +91,21 @@ export class RequestUtils {
         const payloadKeys = Object.keys(object).filter(it => !allowed.includes(it));
 
         const missing = schemaKeys.filter(it => !payloadKeys.includes(it) || object[it] == null);
-        const unrecognized = payloadKeys.filter(it => !schemaKeys.includes(it));
+        const unrecognized = payloadKeys.filter(it => !schemaKeys.includes(it) && object[it] != null);
 
         if ((!strict || missing.length === 0) && unrecognized.length === 0) {
             return object;
         } else {
             let error = '';
-            if (missing.length > 0) error += 'missing fields: ' + missing + '\n';
-            if (unrecognized.length > 0) error += 'unrecognized fields: ' + unrecognized + '\n';
+            if (missing.length > 0) error += 'Missing fields: ' + missing.join(', ');
+            if (unrecognized.length > 0) error += ' | ' + 'Unrecognized fields: ' + unrecognized.join(', ');
             throw new BadRequest(error);
         }
     }
 
     static extractJWTFromHeader(headers: { [p: string]: string }): string {
         if (headers['Authorization'] == null || headers['Authorization'] == undefined) {
-            throw new BadRequest('Missing "Authorized" header.');
+            throw new BadRequest("Missing 'Authorization' header.");
         }
         return headers['Authorization'].split(' ')[1];
     }
