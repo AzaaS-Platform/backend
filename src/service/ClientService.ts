@@ -3,8 +3,11 @@ import { DbMappingConstants as DB, DbMappingConstants } from '../database/DbMapp
 import { Entity } from '../model/Entity';
 import { ClientFactory } from '../model/factory/ClientFactory';
 import { DatabaseAccessor } from '../database/DatabaseAccessor';
+import { Client } from '../model/Client';
+import { BadRequest } from '../error/BadRequest';
 
 export class ClientService extends EntityService {
+    private NO_ADMIN_ACCOUNT_ERROR = 'Cannot create Client without administrator account.';
     constructor(databaseAccessor: DatabaseAccessor) {
         super(databaseAccessor);
     }
@@ -25,6 +28,9 @@ export class ClientService extends EntityService {
     }
 
     async add(entity: Entity): Promise<Entity> {
+        if ((entity as Client).adminUsers.length == 0) {
+            throw new BadRequest(this.NO_ADMIN_ACCOUNT_ERROR);
+        }
         await super.add(entity);
         return entity;
     }
