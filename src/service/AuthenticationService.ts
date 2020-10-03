@@ -8,18 +8,30 @@ import { v4 as UUID } from 'uuid';
 import { Unauthorized } from '../error/Unauthorized';
 import { Forbidden } from '../error/Forbidden';
 import { PermissionsMatcher } from '../utils/PermissionsMatcher';
+import { DbMappingConstants } from '../database/DbMappingConstants';
+import * as speakeasy from 'speakeasy';
 
 export class AuthenticationService {
-    private INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
-    private INVALID_JSON_WEB_TOKEN = 'Invalid Json Web Token. Authorization not given.';
-    private TOKEN_EXPIRED = 'Expired Json Web Token. Authorization not given.';
-    private TOKEN_EXPIRATION_TIME = '30m';
+    private readonly INCORRECT_CREDENTIALS_ERROR = 'Incorrect credentials';
+    private readonly INVALID_JSON_WEB_TOKEN = 'Invalid Json Web Token. Authorization not given.';
+    private readonly TOKEN_EXPIRED = 'Expired Json Web Token. Authorization not given.';
+    private readonly TOKEN_EXPIRATION_TIME = '30m';
+    private readonly TWO_FACTOR_AUTH_WINDOW = 1;
 
     constructor(private userService: UserService) {}
 
-    public async generateTokenForUser(client: string, username: string, password: string): Promise<string> {
+    public async generateTokenForUser(
+        client: string,
+        username: string,
+        password: string,
+        MFAToken?: string | null,
+    ): Promise<string> {
         const user = await this.userService.getByUsername(client, username);
-        if (user === null || !PasswordUtils.validate(password, user.passwordHash)) {
+        if (
+            user === null ||
+            !PasswordUtils.validate(password, user.passwordHash) ||
+            !this.checkTwoFactorAuthentication(user, MFAToken)
+        ) {
             throw new Unauthorized(this.INCORRECT_CREDENTIALS_ERROR);
         }
         const payload = JWTPayloadFactory.from(client, user.entity);
@@ -86,5 +98,23 @@ export class AuthenticationService {
             throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
         }
         return user;
+    }
+
+    private checkTwoFactorAuthentication(user: User, MFAtoken: string | undefined | null): boolean {
+        if (user.MFASecret && user.MFASecret !== DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE) {
+            //checks
+            if (
+                !MFAtoken ||
+                !speakeasy.totp.verify({
+                    secret: user.MFASecret as string,
+                    encoding: 'ascii',
+                    token: MFAtoken,
+                    window: this.TWO_FACTOR_AUTH_WINDOW,
+                })
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

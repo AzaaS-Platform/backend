@@ -31,6 +31,13 @@ export class PermissionsUtils {
         return callback();
     }
 
+    /**
+     * Checks for admin permissions or if user is making request himself and then calls the callback function.
+     * @param jwt JWT object
+     * @param client clientId
+     * @param userService
+     * @param callback function to call in case of success.
+     */
     public static async requireAdminPermissionsOrUserHimself<T>(
         client: string,
         jwt: string,

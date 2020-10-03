@@ -32,12 +32,12 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
 
         const client = RequestUtils.bindClient(event);
 
-        const item = RequestUtils.parse(event.body, CredentialsRequestDto);
+        const item = RequestUtils.parse(event.body, CredentialsRequestDto, false);
         if (item.username === null || item.password === null) {
             throw new BadRequest(MISSING_CREDENTIALS_ERROR);
         }
 
-        const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password);
+        const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password, item.token);
         return RequestUtils.buildResponseWithBody({
             token: jwt,
         });

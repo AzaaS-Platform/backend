@@ -12,6 +12,7 @@ import { NotFound } from '../error/NotFound';
 import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
 import { DbMappingConstants } from '../database/DbMappingConstants';
+import { AuthenticationService } from '../service/AuthenticationService';
 
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
@@ -19,6 +20,9 @@ const REQUEST_CAN_NOT_BE_BLANK = 'Request body cannot be blank.';
 const USER_NOT_FOUND = 'User was not found.';
 const USERS_NOT_FOUND = 'Users were not found.';
 const GROUP_NOT_FOUND = 'Group was not found.';
+const TWO_FACTOR_AUTH_LABEL = 'AzaaS Platform';
+const TWO_FACTOR_AUTH_ADDED = 'Two-factor authentication added to the account.';
+const TWO_FACTOR_AUTH_REMOVED = 'Two-factor authentication removed from the account.';
 
 const validateGroups = async (
     client: string,
@@ -185,6 +189,7 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
         const databaseAccessor = new DatabaseAccessor();
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
@@ -199,15 +204,14 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
                 if (user == null) {
                     throw new NotFound(USER_NOT_FOUND);
                 }
-                const secret = speakeasy.generateSecret({ name: 'AzaaS Platform' });
+                const secret = speakeasy.generateSecret({ name: TWO_FACTOR_AUTH_LABEL });
                 user.MFASecret = secret.ascii;
+
                 await userService.modify(user);
+                await authenticationService.invalidateToken(RequestUtils.extractJWTFromHeader(event.headers));
 
                 const qr = await qrcode.toDataURL(secret.otpauth_url as string);
-                return RequestUtils.buildResponseWithBody(
-                    Object.assign(secret, { qrcode: qr }),
-                    'Two-factor authentication added to the account.',
-                );
+                return RequestUtils.buildResponseWithBody(Object.assign(secret, { qrcode: qr }), TWO_FACTOR_AUTH_ADDED);
             },
         );
     } catch (e) {
@@ -265,7 +269,7 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
                 }
                 user.MFASecret = DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE;
                 await userService.modify(user);
-                return RequestUtils.buildResponse('Two-factor authentication removed from the account.');
+                return RequestUtils.buildResponse(TWO_FACTOR_AUTH_REMOVED);
             },
         );
     } catch (e) {
