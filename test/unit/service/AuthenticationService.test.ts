@@ -6,6 +6,9 @@ import { PasswordUtils } from '../../../src/utils/PasswordUtils';
 import { User } from '../../../src/model/User';
 import { Unauthorized } from '../../../src/error/Unauthorized';
 import * as speakeasy from 'speakeasy';
+import { DbMappingConstants } from '../../../src/database/DbMappingConstants';
+import { Group } from '../../../src/model/Group';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 const CLIENT_ID = 'test-client';
 const USER_ID = 'test-user';
@@ -99,4 +102,148 @@ test('authentication service throws incorrect credentials error when user doesnt
     const result = authenticationService.generateTokenForUser(CLIENT_ID, USERNAME, PASSWORD);
 
     await expect(result).rejects.toEqual(new Unauthorized('Incorrect credentials'));
+});
+
+test('authentication service correctly verifies user permissions', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    const user: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE,
+        groupObjects: new Array<Group>(),
+    } as User;
+
+    userService.getByUsername = async (_client, _username): Promise<User> => user;
+    userService.getByKey = async (_client, _username): Promise<User> => user;
+
+    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
+    const result = await authenticationService.checkPermissionsForUser(token, ['test_permission']);
+
+    expect(result).toEqual(false);
+});
+
+test('authentication service correctly invalidates user token', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    const user: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE,
+        groupObjects: new Array<Group>(),
+    } as User;
+
+    userService.getByUsername = async (_client, _username): Promise<User> => user;
+    userService.getByKey = async (_client, _username): Promise<User> => user;
+    userService.modify = async (_user): Promise<void> => {
+        if (_user.JWTSecret == JWT_SECRET) {
+            fail('JWTSecret should change');
+        }
+    };
+
+    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
+    const result = authenticationService.checkPermissionsForUser(token, ['test_permission']);
+    await expect(result).resolves.toEqual(false);
+
+    await authenticationService.invalidateToken(token);
+    const resultAfterInvalidation = authenticationService.checkPermissionsForUser(token, ['test_permission']);
+    await expect(resultAfterInvalidation).rejects.toEqual(
+        new JsonWebTokenError('Invalid Json Web Token. Authorization not given.'),
+    );
+});
+
+test('authentication service correctly generates MFA secret', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    const user: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE,
+    } as User;
+
+    userService.getByUsername = async (_client, _username): Promise<User> => user;
+    userService.getByKey = async (_client, _username): Promise<User> => user;
+    userService.modify = async (user: User): Promise<void> => {
+        if (user.MFASecret == MFA_SECRET) {
+            fail('User MFA Secret has not been changed.');
+        }
+    };
+
+    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
+    const result = await authenticationService.generateMFASecretForUser(user, token, 'TokenLabel');
+
+    expect(result).toBeTruthy();
+});
+
+test('authentication service correctly checks if user has enabled two factor authentication', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    const userWithEnabled2FA: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: 'enabledSecret',
+    } as User;
+
+    const userWithDisabled2FA: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE,
+    } as User;
+
+    const resultEnabled = await authenticationService.checkMFAEnabledForUser(userWithEnabled2FA);
+    expect(resultEnabled).toEqual(true);
+    const resultDisabled = await authenticationService.checkMFAEnabledForUser(userWithDisabled2FA);
+    expect(resultDisabled).toEqual(false);
+});
+
+test('authentication service correctly removes MFA secret', async () => {
+    // given
+    const databaseAccessor = new DatabaseAccessor();
+    const groupService = new GroupService(databaseAccessor);
+    const userService = new UserService(databaseAccessor, groupService);
+    const authenticationService = new AuthenticationService(userService);
+
+    const user: User = {
+        entity: USER_ID,
+        passwordHash: PASSWORD_HASH,
+        JWTSecret: JWT_SECRET,
+        MFASecret: 'Some correct secret',
+    } as User;
+
+    userService.getByUsername = async (_client, _username): Promise<User> => user;
+    userService.getByKey = async (_client, _username): Promise<User> => user;
+    userService.modify = async (user: User): Promise<void> => {
+        if (user.MFASecret != DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE) {
+            fail('MFASecret should be reset to the ' + DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE);
+        }
+    };
+
+    const MFAtoken = speakeasy.totp({
+        secret: user.MFASecret as string,
+        encoding: 'ascii',
+    });
+    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD, MFAtoken);
+
+    await authenticationService.removeMFAFromUser(user, token);
 });

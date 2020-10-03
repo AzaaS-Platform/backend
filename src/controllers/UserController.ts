@@ -42,18 +42,13 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(
-            client,
-            id,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            userService,
-            async () => {
-                const user = await userService.getByKey(client, id);
-                const responseBody = UserFactory.toResponse(user);
-                return RequestUtils.buildResponseWithBody(responseBody);
-            },
-        );
+        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
+            const user = await userService.getByKey(client, id);
+            const responseBody = UserFactory.toResponse(user);
+            return RequestUtils.buildResponseWithBody(responseBody);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -66,20 +61,16 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const userService = new UserService(databaseAccessor, groupService);
 
         const client = RequestUtils.bindClient(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissions(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            userService,
-            async () => {
-                const users = await userService.getAll(client);
-                if (users.length === 0) {
-                    throw new NotFound(USERS_NOT_FOUND);
-                }
-                const responseBody = users.map(user => UserFactory.toResponse(user));
-                return RequestUtils.buildResponseWithBody(responseBody);
-            },
-        );
+        return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
+            const users = await userService.getAll(client);
+            if (users.length === 0) {
+                throw new NotFound(USERS_NOT_FOUND);
+            }
+            const responseBody = users.map(user => UserFactory.toResponse(user));
+            return RequestUtils.buildResponseWithBody(responseBody);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -92,26 +83,22 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const userService = new UserService(databaseAccessor, groupService);
 
         const client = RequestUtils.bindClient(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissions(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            userService,
-            async () => {
-                if (event.body === null) {
-                    throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
-                }
-                const item = RequestUtils.parse(event.body, UserRequestDto);
-                const user = UserFactory.fromDtoNew(client, item);
+        return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
+            if (event.body === null) {
+                throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
+            }
+            const item = RequestUtils.parse(event.body, UserRequestDto);
+            const user = UserFactory.fromDtoNew(client, item);
 
-                if (!(await validateGroups(client, user.groups, groupService))) {
-                    throw new NotFound(GROUP_NOT_FOUND);
-                }
-                const addedUser = await userService.add(user);
-                const responseBody = UserFactory.toResponse(addedUser);
-                return RequestUtils.buildResponseWithBody(responseBody, CREATED, 201);
-            },
-        );
+            if (!(await validateGroups(client, user.groups, groupService))) {
+                throw new NotFound(GROUP_NOT_FOUND);
+            }
+            const addedUser = await userService.add(user);
+            const responseBody = UserFactory.toResponse(addedUser);
+            return RequestUtils.buildResponseWithBody(responseBody, CREATED, 201);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -125,34 +112,29 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            id,
-            userService,
-            async () => {
-                if (event.body === null) {
-                    throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
-                }
-                const item: UserRequestDto = RequestUtils.parse(event.body, UserRequestDto, false);
-                const user = await userService.getByKey(client, id);
-                if (user === null) {
-                    throw new NotFound(USER_NOT_FOUND);
-                }
-                if (!(await validateGroups(client, item.groups, groupService))) {
-                    throw new NotFound(GROUP_NOT_FOUND);
-                }
+        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
+            if (event.body === null) {
+                throw new BadRequest(REQUEST_CAN_NOT_BE_BLANK);
+            }
+            const item: UserRequestDto = RequestUtils.parse(event.body, UserRequestDto, false);
+            const user = await userService.getByKey(client, id);
+            if (user === null) {
+                throw new NotFound(USER_NOT_FOUND);
+            }
+            if (!(await validateGroups(client, item.groups, groupService))) {
+                throw new NotFound(GROUP_NOT_FOUND);
+            }
 
-                //Modify workaround for now.
-                const modifiedUser = Object.assign(user, item, {
-                    passwordHash: item.password != null ? PasswordUtils.hash(item.password) : user?.passwordHash,
-                });
+            //Modify workaround for now.
+            const modifiedUser = Object.assign(user, item, {
+                passwordHash: item.password != null ? PasswordUtils.hash(item.password) : user?.passwordHash,
+            });
 
-                await userService.modify(modifiedUser);
-                return RequestUtils.buildResponse(NO_CONTENT, 204);
-            },
-        );
+            await userService.modify(modifiedUser);
+            return RequestUtils.buildResponse(NO_CONTENT, 204);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -165,18 +147,13 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const userService = new UserService(databaseAccessor, groupService);
 
         const client = RequestUtils.bindClient(event);
+        const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissions(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            userService,
-            async () => {
-                const id = RequestUtils.bindId(event);
-
-                await userService.delete(client, id);
-                return RequestUtils.buildResponse(NO_CONTENT, 204);
-            },
-        );
+        return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
+            await userService.delete(client, id);
+            return RequestUtils.buildResponse(NO_CONTENT, 204);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -191,28 +168,23 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            id,
-            userService,
-            async () => {
-                // request validation
-                const user = await userService.getByKey(client, id);
-                if (user == null) {
-                    throw new NotFound(USER_NOT_FOUND);
-                }
-                const secret = await authenticationService.generateMFASecretForUser(
-                    user,
-                    RequestUtils.extractJWTFromHeader(event.headers),
-                    TWO_FACTOR_AUTH_LABEL,
-                );
+        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
+            // request validation
+            const user = await userService.getByKey(client, id);
+            if (user == null) {
+                throw new NotFound(USER_NOT_FOUND);
+            }
+            const secret = await authenticationService.generateMFASecretForUser(
+                user,
+                RequestUtils.extractJWTFromHeader(event.headers),
+                TWO_FACTOR_AUTH_LABEL,
+            );
 
-                const qr = await qrcode.toDataURL(secret.otpauth_url as string);
-                return RequestUtils.buildResponseWithBody(Object.assign(secret, { qrcode: qr }), TWO_FACTOR_AUTH_ADDED);
-            },
-        );
+            const qr = await qrcode.toDataURL(secret.otpauth_url as string);
+            return RequestUtils.buildResponseWithBody(Object.assign(secret, { qrcode: qr }), TWO_FACTOR_AUTH_ADDED);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -227,22 +199,17 @@ export const check2FA: APIGatewayProxyHandler = async (event, _context): Promise
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            id,
-            userService,
-            async () => {
-                const user = await userService.getByKey(client, id);
-                if (user == null) {
-                    throw new NotFound(USER_NOT_FOUND);
-                }
-                return RequestUtils.buildResponseWithBody({
-                    has2FAEnabled: authenticationService.checkMFAEnabledForUser(user),
-                });
-            },
-        );
+        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
+            const user = await userService.getByKey(client, id);
+            if (user == null) {
+                throw new NotFound(USER_NOT_FOUND);
+            }
+            return RequestUtils.buildResponseWithBody({
+                has2FAEnabled: authenticationService.checkMFAEnabledForUser(user),
+            });
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }
@@ -257,21 +224,16 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
-        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(
-            client,
-            RequestUtils.extractJWTFromHeader(event.headers),
-            id,
-            userService,
-            async () => {
-                const user = await userService.getByKey(client, id);
-                if (user == null) {
-                    throw new NotFound(USER_NOT_FOUND);
-                }
-                await authenticationService.removeMFAFromUser(user);
-                return RequestUtils.buildResponse(TWO_FACTOR_AUTH_REMOVED);
-            },
-        );
+        return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
+            const user = await userService.getByKey(client, id);
+            if (user == null) {
+                throw new NotFound(USER_NOT_FOUND);
+            }
+            await authenticationService.removeMFAFromUser(user, jwt);
+            return RequestUtils.buildResponse(TWO_FACTOR_AUTH_REMOVED);
+        });
     } catch (e) {
         return RequestUtils.handleError(e);
     }

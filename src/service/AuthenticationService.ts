@@ -135,9 +135,10 @@ export class AuthenticationService {
      * Removes the Two-Factor Authentication from user account.
      * @param user  user from which Two-Factor Authentication should be removed.
      */
-    public async removeMFAFromUser(user: User): Promise<void> {
+    public async removeMFAFromUser(user: User, jwt: string): Promise<void> {
         user.MFASecret = DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE;
         await this.userService.modify(user);
+        await this.invalidateToken(jwt);
     }
 
     private async getUserFromToken(token: string): Promise<User> {
