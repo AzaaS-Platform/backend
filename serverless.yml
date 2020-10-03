@@ -162,6 +162,42 @@ functions:
               paths:
                 client: true
                 entity: true
+  add2FA:
+    handler: src/controllers/UserController.add2FA
+    events:
+      - http:
+          method: post
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  check2FA:
+    handler: src/controllers/UserController.check2FA
+    events:
+      - http:
+          method: get
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  remove2FA:
+    handler: src/controllers/UserController.remove2FA
+    events:
+      - http:
+          method: delete
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
   getToken:
     handler: src/controllers/AuthenticationController.authenticate
     events:

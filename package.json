@@ -13,10 +13,14 @@
         "lint": "eslint . --ext src/.js,.ts --fix"
     },
     "dependencies": {
-        "jsonwebtoken": "^8.5.1",
+        "@types/qrcode": "^1.3.5",
+        "@types/speakeasy": "^2.0.5",
         "bcrypt": "^5.0.0",
+        "jsonwebtoken": "^8.5.1",
         "moment": "^2.29.0",
+        "qrcode": "^1.4.4",
         "source-map-support": "^0.5.19",
+        "speakeasy": "^2.0.0",
         "uuid": "^7.0.3"
     },
     "devDependencies": {

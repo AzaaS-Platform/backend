@@ -29,4 +29,7 @@ export class DbMappingConstants {
     public static GROUP_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.GROUP_TYPE;
     public static USER_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.USER_TYPE;
     public static CLIENT_TYPE_SUFFIX = DbMappingConstants.TYPE_SEPARATOR + DbMappingConstants.CLIENT_TYPE;
+
+    // Magic values, to be reworked.
+    public static MFA_NOT_ENABLED_MAGIC_VALUE = 'MfaNotEnabled';
 }

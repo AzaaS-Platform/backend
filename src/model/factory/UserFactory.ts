@@ -28,7 +28,7 @@ export class UserFactory {
             false,
             null,
             UUID(),
-            UUID(),
+            DB.MFA_NOT_ENABLED_MAGIC_VALUE,
         );
     }
 
