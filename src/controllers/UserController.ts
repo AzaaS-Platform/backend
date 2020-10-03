@@ -9,9 +9,7 @@ import { UserFactory } from '../model/factory/UserFactory';
 import { PermissionsUtils } from '../utils/PermissionsUtils';
 import { PasswordUtils } from '../utils/PasswordUtils';
 import { NotFound } from '../error/NotFound';
-import * as speakeasy from 'speakeasy';
 import * as qrcode from 'qrcode';
-import { DbMappingConstants } from '../database/DbMappingConstants';
 import { AuthenticationService } from '../service/AuthenticationService';
 
 const NO_CONTENT = 'No content.';
@@ -200,15 +198,16 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
             id,
             userService,
             async () => {
+                // request validation
                 const user = await userService.getByKey(client, id);
                 if (user == null) {
                     throw new NotFound(USER_NOT_FOUND);
                 }
-                const secret = speakeasy.generateSecret({ name: TWO_FACTOR_AUTH_LABEL });
-                user.MFASecret = secret.ascii;
-
-                await userService.modify(user);
-                await authenticationService.invalidateToken(RequestUtils.extractJWTFromHeader(event.headers));
+                const secret = await authenticationService.generateMFASecretForUser(
+                    user,
+                    RequestUtils.extractJWTFromHeader(event.headers),
+                    TWO_FACTOR_AUTH_LABEL,
+                );
 
                 const qr = await qrcode.toDataURL(secret.otpauth_url as string);
                 return RequestUtils.buildResponseWithBody(Object.assign(secret, { qrcode: qr }), TWO_FACTOR_AUTH_ADDED);
@@ -224,6 +223,7 @@ export const check2FA: APIGatewayProxyHandler = async (event, _context): Promise
         const databaseAccessor = new DatabaseAccessor();
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
@@ -239,7 +239,7 @@ export const check2FA: APIGatewayProxyHandler = async (event, _context): Promise
                     throw new NotFound(USER_NOT_FOUND);
                 }
                 return RequestUtils.buildResponseWithBody({
-                    has2FAEnabled: user.MFASecret != DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE,
+                    has2FAEnabled: authenticationService.checkMFAEnabledForUser(user),
                 });
             },
         );
@@ -253,6 +253,7 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
         const databaseAccessor = new DatabaseAccessor();
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
+        const authenticationService = new AuthenticationService(userService);
 
         const client = RequestUtils.bindClient(event);
         const id = RequestUtils.bindId(event);
@@ -267,8 +268,7 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
                 if (user == null) {
                     throw new NotFound(USER_NOT_FOUND);
                 }
-                user.MFASecret = DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE;
-                await userService.modify(user);
+                await authenticationService.removeMFAFromUser(user);
                 return RequestUtils.buildResponse(TWO_FACTOR_AUTH_REMOVED);
             },
         );
