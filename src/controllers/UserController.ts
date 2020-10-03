@@ -176,11 +176,7 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
             if (user == null) {
                 throw new NotFound(USER_NOT_FOUND);
             }
-            const secret = await authenticationService.generateMFASecretForUser(
-                user,
-                RequestUtils.extractJWTFromHeader(event.headers),
-                TWO_FACTOR_AUTH_LABEL,
-            );
+            const secret = await authenticationService.generateMFASecretForUser(user, TWO_FACTOR_AUTH_LABEL);
 
             const qr = await qrcode.toDataURL(secret.otpauth_url as string);
             return RequestUtils.buildResponseWithBody(Object.assign(secret, { qrcode: qr }), TWO_FACTOR_AUTH_ADDED);
@@ -231,7 +227,7 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
             if (user == null) {
                 throw new NotFound(USER_NOT_FOUND);
             }
-            await authenticationService.removeMFAFromUser(user, jwt);
+            await authenticationService.removeMFAFromUser(user);
             return RequestUtils.buildResponse(TWO_FACTOR_AUTH_REMOVED);
         });
     } catch (e) {

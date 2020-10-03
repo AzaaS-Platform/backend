@@ -182,10 +182,12 @@ test('authentication service correctly generates MFA secret', async () => {
         if (user.MFASecret == MFA_SECRET) {
             fail('User MFA Secret has not been changed.');
         }
+        if (user.JWTSecret == JWT_SECRET) {
+            fail('JWTSecret should be changed to invalidate tokens.');
+        }
     };
 
-    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
-    const result = await authenticationService.generateMFASecretForUser(user, token, 'TokenLabel');
+    const result = await authenticationService.generateMFASecretForUser(user, 'TokenLabel');
 
     expect(result).toBeTruthy();
 });
@@ -237,13 +239,23 @@ test('authentication service correctly removes MFA secret', async () => {
         if (user.MFASecret != DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE) {
             fail('MFASecret should be reset to the ' + DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE);
         }
+        if (user.JWTSecret == JWT_SECRET) {
+            fail('JWTSecret should be changed to invalidate tokens.');
+        }
     };
 
     const MFAtoken = speakeasy.totp({
         secret: user.MFASecret as string,
         encoding: 'ascii',
     });
-    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD, MFAtoken);
-
-    await authenticationService.removeMFAFromUser(user, token);
+    const resultBeforeRemoval = await authenticationService.generateTokenForUser(
+        user.client,
+        user.username,
+        PASSWORD,
+        MFAtoken,
+    );
+    await authenticationService.removeMFAFromUser(user);
+    const resultAfterRemoval = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
+    expect(resultBeforeRemoval).toBeTruthy();
+    expect(resultAfterRemoval).toBeTruthy();
 });

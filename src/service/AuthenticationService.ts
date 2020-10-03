@@ -109,16 +109,12 @@ export class AuthenticationService {
      * @param tokenLabel    label of the token that will be visible in 2FA app.
      * @return generated secret in the {@link GeneratedSecret} format.
      */
-    public async generateMFASecretForUser(
-        user: User,
-        jwt: string,
-        tokenLabel: string,
-    ): Promise<speakeasy.GeneratedSecret> {
+    public async generateMFASecretForUser(user: User, tokenLabel: string): Promise<speakeasy.GeneratedSecret> {
         const secret = speakeasy.generateSecret({ name: tokenLabel });
         user.MFASecret = secret.ascii;
+        user.JWTSecret = UUID();
 
         await this.userService.modify(user);
-        await this.invalidateToken(jwt);
         return secret;
     }
 
@@ -135,10 +131,10 @@ export class AuthenticationService {
      * Removes the Two-Factor Authentication from user account.
      * @param user  user from which Two-Factor Authentication should be removed.
      */
-    public async removeMFAFromUser(user: User, jwt: string): Promise<void> {
+    public async removeMFAFromUser(user: User): Promise<void> {
         user.MFASecret = DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE;
+        user.JWTSecret = UUID();
         await this.userService.modify(user);
-        await this.invalidateToken(jwt);
     }
 
     private async getUserFromToken(token: string): Promise<User> {
