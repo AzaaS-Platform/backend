@@ -150,7 +150,13 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
             userService,
             async () => {
                 const id = RequestUtils.bindId(event);
-
+                const users = await userService.getAll(client);
+                await users
+                    .filter(user => user.groups.includes(id))
+                    .forEach(async user => {
+                        user.groups = user.groups.filter(group => group != id);
+                        await userService.modify(user);
+                    });
                 await groupService.delete(client, id);
                 return RequestUtils.buildResponse(NO_CONTENT, 204);
             },
