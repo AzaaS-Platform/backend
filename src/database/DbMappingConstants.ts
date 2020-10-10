@@ -15,7 +15,6 @@ export class DbMappingConstants {
     public static JWT_SECRET = 'jwtSecret';
     public static MFA_SECRET = 'mfaSecret';
 
-    public static CLIENT_NAME = 'clientName';
     public static ADMIN_USERS = 'adminUsers';
 
     // schema constants

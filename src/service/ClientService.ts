@@ -13,7 +13,7 @@ export class ClientService extends EntityService {
     }
 
     async getByKey(client: string, key: string = client): Promise<Entity | null> {
-        const item = await this.databaseAccessor.getItemByKeys(client, key, DbMappingConstants.USER_TYPE);
+        const item = await this.databaseAccessor.getItemByKeys(client, key, DbMappingConstants.CLIENT_TYPE);
 
         if (item != null) {
             const clientEntity = ClientFactory.fromDbItem(item);
