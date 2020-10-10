@@ -15,6 +15,7 @@ const CREATED = 'Created';
 const BODY_CAN_NOT_BE_BLANK = 'Request body cannot be blank';
 const GROUPS_NOT_FOUND = 'Groups were not found.';
 const GROUP_NOT_FOUND = 'Group was not found.';
+const BAD_GROUP_NAME = "Incorrect Group name. Group name can contain only letters, numbers and '-', '_' characters.";
 
 export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
     try {
@@ -36,7 +37,12 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
                     throw new NotFound(GROUP_NOT_FOUND);
                 }
 
-                const responseBody = new GroupResponseDto(group?.client, group?.entity, group?.permissions);
+                const responseBody = new GroupResponseDto(
+                    group?.client,
+                    group?.entity,
+                    group?.name,
+                    group?.permissions,
+                );
                 return RequestUtils.buildResponseWithBody(responseBody);
             },
         );
@@ -90,6 +96,9 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
 
                 const item = RequestUtils.parse(event.body, GroupRequestDto);
                 const group = GroupFactory.fromDtoNew(client, item);
+                if (!/^[0-9a-zA-Z_-]+$/.test(group.name)) {
+                    throw new BadRequest(BAD_GROUP_NAME);
+                }
 
                 const addedGroup = await groupService.add(group);
                 const responseBody = GroupFactory.toResponse(addedGroup);

@@ -9,25 +9,33 @@ import { DatabaseAccessorTestUtils as DbUtils } from '../../db/DatabaseAccessorT
 const CLIENT_HASH = 'ac7c5306-e33c-4e1a-8643-875c1c7917d4';
 
 const EMPTY_GROUP_HASH = '16fc3362-5751-4eca-8478-69e1434cbbf8';
-const EMPTY_GROUP = new Group(CLIENT_HASH, EMPTY_GROUP_HASH, Array<string>());
+const EMPTY_GROUP = new Group(CLIENT_HASH, EMPTY_GROUP_HASH, 'EMPTY_GROUP', Array<string>());
 const EMPTY_GROUP_DATA = new DbItem({
     client: CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
     entity: EMPTY_GROUP_HASH,
+    groupName: 'EMPTY_GROUP',
 });
 
 const ONE_GROUP_HASH = '92663fc0-b18b-4c99-ad26-f130cc01014b';
-const ONE_GROUP = new Group(CLIENT_HASH, ONE_GROUP_HASH, Array<string>('permission1'));
+const ONE_GROUP = new Group(CLIENT_HASH, ONE_GROUP_HASH, 'ONE_GROUP', Array<string>('permission1'));
 const ONE_GROUP_DATA = new DbItem({
     client: CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
     entity: ONE_GROUP_HASH,
+    groupName: 'ONE_GROUP',
     permissions: Array<string>('permission1'),
 });
 
 const MULTIPLE_GROUP_HASH = 'b36f3d80-6217-47ef-954c-efc1d4073646';
-const MULTIPLE_GROUP = new Group(CLIENT_HASH, MULTIPLE_GROUP_HASH, Array<string>('permission1', 'permission2'));
+const MULTIPLE_GROUP = new Group(
+    CLIENT_HASH,
+    MULTIPLE_GROUP_HASH,
+    'MULTI_GROUP',
+    Array<string>('permission1', 'permission2'),
+);
 const MULTIPLE_GROUP_DATA = new DbItem({
     client: CLIENT_HASH + DB.GROUP_TYPE_SUFFIX,
     entity: MULTIPLE_GROUP_HASH,
+    groupName: 'MULTI_GROUP',
     permissions: Array<string>('permission1', 'permission2'),
 });
 
