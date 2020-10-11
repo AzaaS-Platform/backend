@@ -15,17 +15,19 @@ const GROUP_1_HASH = '1461ad76-9133-4b32-8314-2d1f13364ae9';
 const GROUP_1_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: GROUP_1_HASH,
+    groupName: 'GROUP_1',
     permissions: Array<string>('permission1'),
 });
-const GROUP_1 = new Group(CLIENT_HASH, GROUP_1_HASH, Array<string>('permission1'));
+const GROUP_1 = new Group(CLIENT_HASH, GROUP_1_HASH, 'GROUP_1', Array<string>('permission1'));
 
 const GROUP_2_HASH = '44c96464-a7b9-4784-9437-692346893905';
 const GROUP_2_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: GROUP_2_HASH,
+    groupName: 'GROUP_2',
     permissions: Array<string>('permission2', 'permission3'),
 });
-const GROUP_2 = new Group(CLIENT_HASH, GROUP_2_HASH, Array<string>('permission2', 'permission3'));
+const GROUP_2 = new Group(CLIENT_HASH, GROUP_2_HASH, 'GROUP_2', Array<string>('permission2', 'permission3'));
 
 const EMPTY_USER_HASH = 'b9c9ce4e-3df0-4b7b-9f25-df86e12e574b';
 const EMPTY_USER_DATA = new DbItem({
