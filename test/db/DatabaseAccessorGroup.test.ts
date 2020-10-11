@@ -58,7 +58,7 @@ test('database accessor reads all pre-set groups at once', async () => {
     const databaseAccessor = new DatabaseAccessor();
 
     //when
-    const actual = await databaseAccessor.getItemsPartitionKey(DbUtils.PRESET_CLIENT_HASH, DB.GROUP_TYPE);
+    const actual = await databaseAccessor.getItemsByPartitionKey(DbUtils.PRESET_CLIENT_HASH, DB.GROUP_TYPE);
 
     //then
     expected.forEach(it => {

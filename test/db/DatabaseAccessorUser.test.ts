@@ -62,7 +62,7 @@ test('database accessor reads all pre-set users at once', async () => {
     const databaseAccessor = new DatabaseAccessor();
 
     //when
-    const actual = await databaseAccessor.getItemsPartitionKey(
+    const actual = await databaseAccessor.getItemsByPartitionKey(
         DbUtils.PRESET_CLIENT_HASH,
         DbMappingConstants.USER_TYPE,
     );

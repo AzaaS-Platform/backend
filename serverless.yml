@@ -6,15 +6,26 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+    packager: 'npm'
+  serverless-offline:
+    useChildProcesses: true
 
 plugins:
   - serverless-webpack
+  - serverless-offline
+
+package:
+  individually: false
+  exclude:
+    - node_modules/**
+    - src/**
 
 provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: eu-central-1
+  timeout: 15
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
@@ -39,7 +50,8 @@ functions:
     events:
       - http:
           method: get
-          path: groups/{client}/{entity}
+          path: clients/{client}/groups/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -50,7 +62,8 @@ functions:
     events:
       - http:
           method: get
-          path: groups/{client}
+          path: clients/{client}/groups
+          cors: true
           request:
             parameters:
               paths:
@@ -60,7 +73,8 @@ functions:
     events:
       - http:
           method: post
-          path: groups/{client}
+          path: clients/{client}/groups
+          cors: true
           request:
             parameters:
               paths:
@@ -70,7 +84,8 @@ functions:
     events:
       - http:
           method: put
-          path: groups/{client}/{entity}
+          path: clients/{client}/groups/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -81,7 +96,8 @@ functions:
     events:
       - http:
           method: delete
-          path: groups/{client}/{entity}
+          path: clients/{client}/groups/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -93,7 +109,8 @@ functions:
     events:
       - http:
           method: get
-          path: users/{client}/{entity}
+          path: clients/{client}/users/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -104,7 +121,8 @@ functions:
     events:
       - http:
           method: get
-          path: users/{client}
+          path: clients/{client}/users
+          cors: true
           request:
             parameters:
               paths:
@@ -114,7 +132,8 @@ functions:
     events:
       - http:
           method: post
-          path: users/{client}
+          path: clients/{client}/users
+          cors: true
           request:
             parameters:
               paths:
@@ -124,7 +143,8 @@ functions:
     events:
       - http:
           method: put
-          path: users/{client}/{entity}
+          path: clients/{client}/users/{entity}
+          cors: true
           request:
             parameters:
               paths:
@@ -135,9 +155,85 @@ functions:
     events:
       - http:
           method: delete
-          path: users/{client}/{entity}
+          path: clients/{client}/users/{entity}
+          cors: true
           request:
             parameters:
               paths:
                 client: true
                 entity: true
+  add2FA:
+    handler: src/controllers/UserController.add2FA
+    events:
+      - http:
+          method: post
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  check2FA:
+    handler: src/controllers/UserController.check2FA
+    events:
+      - http:
+          method: get
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  remove2FA:
+    handler: src/controllers/UserController.remove2FA
+    events:
+      - http:
+          method: delete
+          path: clients/{client}/users/{entity}/mfa
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+                entity: true
+  getToken:
+    handler: src/controllers/AuthenticationController.authenticate
+    events:
+      - http:
+          method: post
+          path: clients/{client}/token
+          cors: true
+          request:
+            parameters:
+              paths:
+                client: true
+  authorize:
+    handler: src/controllers/AuthenticationController.authorize
+    events:
+      - http:
+          method: post
+          path: authorize
+          cors: true
+  invalidateToken:
+    handler: src/controllers/AuthenticationController.invalidate
+    events:
+      - http:
+          method: get
+          path: token/invalidate
+          cors: true
+  refreshToken:
+    handler: src/controllers/AuthenticationController.refresh
+    events:
+      - http:
+          method: get
+          path: token
+          cors: true
+  registerClient:
+    handler: src/controllers/ClientController.register
+    events:
+      - http:
+          method: post
+          path: clients
+          cors: true

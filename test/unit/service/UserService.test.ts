@@ -15,35 +15,58 @@ const GROUP_1_HASH = '1461ad76-9133-4b32-8314-2d1f13364ae9';
 const GROUP_1_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: GROUP_1_HASH,
+    groupName: 'GROUP_1',
     permissions: Array<string>('permission1'),
 });
-const GROUP_1 = new Group(CLIENT_HASH, GROUP_1_HASH, Array<string>('permission1'));
+const GROUP_1 = new Group(CLIENT_HASH, GROUP_1_HASH, 'GROUP_1', Array<string>('permission1'));
 
 const GROUP_2_HASH = '44c96464-a7b9-4784-9437-692346893905';
 const GROUP_2_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: GROUP_2_HASH,
+    groupName: 'GROUP_2',
     permissions: Array<string>('permission2', 'permission3'),
 });
-const GROUP_2 = new Group(CLIENT_HASH, GROUP_2_HASH, Array<string>('permission2', 'permission3'));
+const GROUP_2 = new Group(CLIENT_HASH, GROUP_2_HASH, 'GROUP_2', Array<string>('permission2', 'permission3'));
 
 const EMPTY_USER_HASH = 'b9c9ce4e-3df0-4b7b-9f25-df86e12e574b';
 const EMPTY_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: EMPTY_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
+    jwtSecret: null,
+    mfaSecret: null,
 });
-const EMPTY_USER = new User(CLIENT_HASH, EMPTY_USER_HASH, Array<string>(), Array<Group>());
+const EMPTY_USER = new User(
+    CLIENT_HASH,
+    EMPTY_USER_HASH,
+    'username',
+    'password',
+    Array<string>(),
+    false,
+    Array<Group>(),
+);
 
 const MULTIPLE_USER_HASH = '3c83b316-3904-498b-a5e6-e1c6c7b217d6';
 const MULTIPLE_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: MULTIPLE_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH),
+    jwtSecret: null,
+    mfaSecret: null,
 });
 const MULTIPLE_USER = new User(
     CLIENT_HASH,
     MULTIPLE_USER_HASH,
+    'username',
+    'password',
     Array<string>(GROUP_1_HASH, GROUP_2_HASH),
+    false,
     Array<Group>(GROUP_1, GROUP_2),
 );
 
@@ -54,7 +77,12 @@ const BROKEN_USER_HASH = '61db4f42-08ff-4ba6-ba20-79d4010097cf';
 const BROKEN_USER_DATA = new DbItem({
     client: CLIENT_HASH + DB.USER_TYPE_SUFFIX,
     entity: BROKEN_USER_HASH,
+    username: 'username',
+    passwordHash: 'password',
+    isAdmin: false,
     groups: Array<string>(GROUP_1_HASH, GROUP_2_HASH, NON_EXISTING_GROUP_HASH),
+    jwtSecret: null,
+    mfaSecret: null,
 });
 
 const MOCK_GET_ITEM_BY_KEY = async (
@@ -176,7 +204,7 @@ test('user service throws error when user is in a non-existing group', async () 
         await userService.getByKey(CLIENT_HASH, BROKEN_USER_HASH);
     } catch (e) {
         // then
-        expect(e.message).toEqual('user belongs to non-existing group');
+        expect(e.message).toEqual('User belongs to non-existing group.');
         expect((e as InternalServerError).code).toEqual(500);
     }
     expect.assertions(2);

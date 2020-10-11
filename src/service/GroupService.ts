@@ -26,7 +26,7 @@ export class GroupService extends EntityService {
 
     async getAll(client: string): Promise<Array<Group>> {
         try {
-            const items = await this.databaseAccessor.getItemsPartitionKey(client, 'group');
+            const items = await this.databaseAccessor.getItemsByPartitionKey(client, 'group');
             if (items != null) {
                 return items.map(it => {
                     return GroupFactory.fromDbItem(it);
@@ -37,6 +37,10 @@ export class GroupService extends EntityService {
         } catch (e) {
             throw new InternalServerError(e.message);
         }
+    }
+    async add(group: Group): Promise<Group> {
+        await super.add(group);
+        return group;
     }
 
     async delete(client: string, id: string): Promise<void> {

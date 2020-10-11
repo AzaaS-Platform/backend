@@ -10,9 +10,10 @@ export abstract class EntityService {
 
     abstract async getAll(client: string): Promise<Array<Entity>>;
 
-    async add(entity: Entity): Promise<void> {
+    async add(entity: Entity): Promise<Entity> {
         try {
-            return await this.databaseAccessor.put(entity.toDbItem(), false);
+            await this.databaseAccessor.put(entity.toDbItem(), false);
+            return entity;
         } catch (e) {
             if (e.message === 'The conditional request failed') throw new BadRequest('cannot overwrite item');
             else throw new InternalServerError(e.message);
