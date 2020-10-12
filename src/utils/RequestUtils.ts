@@ -11,6 +11,7 @@ export class RequestUtils {
             statusCode: statusCode,
             headers: {
                 'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Method': '*',
                 'Access-Control-Allow-Credentials': true,
                 'Access-Control-Allow-Headers': 'Authorization',
             },
@@ -27,6 +28,7 @@ export class RequestUtils {
             statusCode: statusCode,
             headers: {
                 'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Method': '*',
                 'Access-Control-Allow-Credentials': true,
                 'Access-Control-Allow-Headers': 'Authorization',
             },
