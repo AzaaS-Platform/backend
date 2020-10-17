@@ -13,7 +13,6 @@ import { NotFound } from '../error/NotFound';
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
 const BODY_CAN_NOT_BE_BLANK = 'Request body cannot be blank';
-const GROUPS_NOT_FOUND = 'Groups were not found.';
 const GROUP_NOT_FOUND = 'Group was not found.';
 const BAD_GROUP_NAME = "Incorrect Group name. Group name can contain only letters, numbers and '-', '_' characters.";
 
@@ -65,9 +64,6 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
             userService,
             async () => {
                 const groups = await groupService.getAll(client);
-                if (groups.length === 0) {
-                    throw new NotFound(GROUPS_NOT_FOUND);
-                }
                 const responseBody = groups.map(group => GroupFactory.toResponse(group));
                 return RequestUtils.buildResponseWithBody(responseBody);
             },

@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { HttpError } from '../error/HttpError';
 import { BadRequest } from '../error/BadRequest';
+import {Unauthorized} from '../error/Unauthorized';
 
 export class RequestUtils {
     public static CLIENT = 'client';
@@ -107,7 +108,7 @@ export class RequestUtils {
 
     static extractJWTFromHeader(headers: { [p: string]: string }): string {
         if (headers['Authorization'] == null || headers['Authorization'] == undefined) {
-            throw new BadRequest("Missing 'Authorization' header.");
+            throw new Unauthorized("Missing 'Authorization' header.");
         }
         return headers['Authorization'].split(' ')[1];
     }
