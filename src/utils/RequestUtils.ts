@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { HttpError } from '../error/HttpError';
 import { BadRequest } from '../error/BadRequest';
-import {Unauthorized} from "../error/Unauthorized";
+import { Unauthorized } from '../error/Unauthorized';
 
 const RESPONSE_HEADERS = {
     'Access-Control-Allow-Origin': '*',
