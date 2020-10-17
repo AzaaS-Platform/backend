@@ -1,6 +1,15 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { HttpError } from '../error/HttpError';
 import { BadRequest } from '../error/BadRequest';
+import { Unauthorized } from '../error/Unauthorized';
+
+const RESPONSE_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Method': '*',
+    'Access-Control-Allow-Credentials': true,
+    'Access-Control-Allow-Headers': '*',
+    'Content-Type': 'application/json',
+};
 
 export class RequestUtils {
     public static CLIENT = 'client';
@@ -9,12 +18,7 @@ export class RequestUtils {
     static buildResponse(message: string, statusCode = 200): APIGatewayProxyResult {
         return {
             statusCode: statusCode,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Method': '*',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Headers': 'Authorization',
-            },
+            headers: RESPONSE_HEADERS,
             body: JSON.stringify({
                 statusCode: statusCode,
                 message: message,
@@ -26,12 +30,7 @@ export class RequestUtils {
     static buildResponseWithBody(responseBody: {}, message?: string, statusCode = 200): APIGatewayProxyResult {
         return {
             statusCode: statusCode,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Method': '*',
-                'Access-Control-Allow-Credentials': true,
-                'Access-Control-Allow-Headers': 'Authorization',
-            },
+            headers: RESPONSE_HEADERS,
             body: JSON.stringify({
                 statusCode: statusCode,
                 message: message,
@@ -107,7 +106,7 @@ export class RequestUtils {
 
     static extractJWTFromHeader(headers: { [p: string]: string }): string {
         if (headers['Authorization'] == null || headers['Authorization'] == undefined) {
-            throw new BadRequest("Missing 'Authorization' header.");
+            throw new Unauthorized("Missing 'Authorization' header.");
         }
         return headers['Authorization'].split(' ')[1];
     }
