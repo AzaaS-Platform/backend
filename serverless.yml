@@ -52,7 +52,6 @@ functions:
           method: get
           path: clients/{client}/groups/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -65,7 +64,6 @@ functions:
           method: get
           path: clients/{client}/groups
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -77,7 +75,6 @@ functions:
           method: post
           path: clients/{client}/groups
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -89,7 +86,6 @@ functions:
           method: put
           path: clients/{client}/groups/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -102,7 +98,6 @@ functions:
           method: delete
           path: clients/{client}/groups/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -116,7 +111,6 @@ functions:
           method: get
           path: clients/{client}/users/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -129,7 +123,6 @@ functions:
           method: get
           path: clients/{client}/users
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -141,7 +134,6 @@ functions:
           method: post
           path: clients/{client}/users
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -153,7 +145,6 @@ functions:
           method: put
           path: clients/{client}/users/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -166,7 +157,6 @@ functions:
           method: delete
           path: clients/{client}/users/{entity}
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -179,7 +169,6 @@ functions:
           method: post
           path: clients/{client}/users/{entity}/mfa
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -192,7 +181,6 @@ functions:
           method: get
           path: clients/{client}/users/{entity}/mfa
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -205,7 +193,6 @@ functions:
           method: delete
           path: clients/{client}/users/{entity}/mfa
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -218,7 +205,6 @@ functions:
           method: post
           path: clients/{client}/token
           cors: true
-          integration: LAMBDA
           request:
             parameters:
               paths:
@@ -230,7 +216,6 @@ functions:
           method: post
           path: authorize
           cors: true
-          integration: LAMBDA
   invalidateToken:
     handler: src/controllers/AuthenticationController.invalidate
     events:
@@ -238,7 +223,6 @@ functions:
           method: get
           path: token/invalidate
           cors: true
-          integration: LAMBDA
   refreshToken:
     handler: src/controllers/AuthenticationController.refresh
     events:
@@ -246,7 +230,6 @@ functions:
           method: get
           path: token
           cors: true
-          integration: LAMBDA
   registerClient:
     handler: src/controllers/ClientController.register
     events:
@@ -254,7 +237,6 @@ functions:
           method: post
           path: clients
           cors: true
-          integration: LAMBDA
 
 resources:
   Resources:
@@ -262,8 +244,8 @@ resources:
       Type: 'AWS::ApiGateway::GatewayResponse'
       Properties:
         ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Origin: '*'
+          gatewayresponse.header.Access-Control-Allow-Headers: '*'
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: 'ApiGatewayRestApi'
