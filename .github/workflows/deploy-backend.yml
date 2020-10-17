@@ -26,5 +26,4 @@ jobs:
             - run: npm install
             - run: npm run-script lint-check
             - run: npm run-script test
-            - run: npm run-script deploy
             - run: npm run-script deploy-prod
