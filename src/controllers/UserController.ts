@@ -16,7 +16,6 @@ const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
 const REQUEST_CAN_NOT_BE_BLANK = 'Request body cannot be blank.';
 const USER_NOT_FOUND = 'User was not found.';
-const USERS_NOT_FOUND = 'Users were not found.';
 const GROUP_NOT_FOUND = 'Group was not found.';
 const TWO_FACTOR_AUTH_LABEL = 'AzaaS Platform';
 const TWO_FACTOR_AUTH_ADDED = 'Two-factor authentication added to the account.';
@@ -65,9 +64,6 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
 
         return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
             const users = await userService.getAll(client);
-            if (users.length === 0) {
-                throw new NotFound(USERS_NOT_FOUND);
-            }
             const responseBody = users.map(user => UserFactory.toResponse(user));
             return RequestUtils.buildResponseWithBody(responseBody);
         });
