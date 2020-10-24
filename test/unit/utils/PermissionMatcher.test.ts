@@ -351,19 +351,7 @@ test('match any permissions when there is only asterisk', async () => {
 
 test('match a permission with negative permission in other group with asterisk', async () => {
     // given
-    const user = createUserWithGroups([createRole('e1', ['*']), createRole('e2', ['-p1/p2/p3'])]);
-    const matcher = PermissionsMatcher.forUser(user);
-
-    // when
-    const result = matcher.match(['p1/p2']);
-
-    // then
-    expect(result).toEqual(false);
-});
-
-test('match a permission with negative permission in other group with asterisk', async () => {
-    // given
-    const user = createUserWithGroups([createRole('e1', ['*']), createRole('e2', ['-p1/p2/p3'])]);
+    const user = createUserWithGroups([createRole('e1', ['*']), createRole('e2', ['-p1/p2'])]);
     const matcher = PermissionsMatcher.forUser(user);
 
     // when
