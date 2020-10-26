@@ -61,10 +61,7 @@ export class AuthenticationService {
             const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
-            return PermissionsMatcher.match(
-                permissionsRequired,
-                user.groupObjects.flatMap(group => group.permissions),
-            );
+            return PermissionsMatcher.forUser(user).match(permissionsRequired);
         } catch (error) {
             this.handleAuthorizationError(error);
         }
