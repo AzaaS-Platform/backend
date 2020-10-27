@@ -182,9 +182,6 @@ test('authentication service correctly generates MFA secret', async () => {
         if (user.MFASecret == MFA_SECRET) {
             fail('User MFA Secret has not been changed.');
         }
-        if (user.JWTSecret == JWT_SECRET) {
-            fail('JWTSecret should be changed to invalidate tokens.');
-        }
     };
 
     const result = await authenticationService.generateMFASecretForUser(user, 'TokenLabel');
@@ -238,9 +235,6 @@ test('authentication service correctly removes MFA secret', async () => {
     userService.modify = async (user: User): Promise<void> => {
         if (user.MFASecret != DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE) {
             fail('MFASecret should be reset to the ' + DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE);
-        }
-        if (user.JWTSecret == JWT_SECRET) {
-            fail('JWTSecret should be changed to invalidate tokens.');
         }
     };
 
