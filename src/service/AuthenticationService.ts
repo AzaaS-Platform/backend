@@ -109,7 +109,6 @@ export class AuthenticationService {
     public async generateMFASecretForUser(user: User, tokenLabel: string): Promise<speakeasy.GeneratedSecret> {
         const secret = speakeasy.generateSecret({ name: tokenLabel });
         user.MFASecret = secret.ascii;
-        user.JWTSecret = UUID();
 
         await this.userService.modify(user);
         return secret;
@@ -130,7 +129,6 @@ export class AuthenticationService {
      */
     public async removeMFAFromUser(user: User): Promise<void> {
         user.MFASecret = DbMappingConstants.MFA_NOT_ENABLED_MAGIC_VALUE;
-        user.JWTSecret = UUID();
         await this.userService.modify(user);
     }
 
