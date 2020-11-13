@@ -43,6 +43,7 @@ export class RequestUtils {
         const code = (error as HttpError).code ?? 500;
         return {
             statusCode: code,
+            headers: RESPONSE_HEADERS,
             body: JSON.stringify({
                 statusCode: code,
                 message: code !== 500 ? error.message : 'Internal server error.',
