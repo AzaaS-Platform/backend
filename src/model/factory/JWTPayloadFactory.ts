@@ -9,9 +9,9 @@ export class JWTPayloadFactory {
             throw new BadRequest('Incorrect JWT payload.');
         }
         const payload: JWTPayload = decodedJwt['payload'];
-        return new JWTPayload(payload.clt, payload.usr);
+        return new JWTPayload(payload.clt, payload.usr, payload.adm);
     }
-    public static from(client: string, userId: string): JWTPayload {
-        return new JWTPayload(client, userId);
+    public static from(client: string, userId: string, isAdmin: boolean): JWTPayload {
+        return new JWTPayload(client, userId, isAdmin);
     }
 }

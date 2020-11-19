@@ -45,7 +45,7 @@ export class AuthenticationService {
         ) {
             throw new Unauthorized(this.INCORRECT_CREDENTIALS_ERROR);
         }
-        const payload = JWTPayloadFactory.from(client, user.entity);
+        const payload = JWTPayloadFactory.from(client, user.entity, user.isAdmin);
 
         return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
     }
@@ -92,7 +92,7 @@ export class AuthenticationService {
             const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
-            const payload = JWTPayloadFactory.from(user.client, user.entity);
+            const payload = JWTPayloadFactory.from(user.client, user.entity, user.isAdmin);
             return jwt.sign({ payload }, user.JWTSecret as string, { expiresIn: this.TOKEN_EXPIRATION_TIME });
         } catch (error) {
             this.handleAuthorizationError(error);
@@ -102,9 +102,8 @@ export class AuthenticationService {
     /**
      * Generates a new two-factor authentication secret for the user and optionally invalidates all existing JWT tokens.
      * @param user          user for which token should be generated
-     * @param jwt           Json Web Token
      * @param tokenLabel    label of the token that will be visible in 2FA app.
-     * @return generated secret in the {@link GeneratedSecret} format.
+     * @return generated secret in the {@link speakeasy.GeneratedSecret} format.
      */
     public async generateMFASecretForUser(user: User, tokenLabel: string): Promise<speakeasy.GeneratedSecret> {
         const secret = speakeasy.generateSecret({ name: tokenLabel });
