@@ -47,7 +47,10 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
             });
         } else if (redirectUrl) {
             // Tutaj zamisat if (redirectUrl) to if (isAllowed(redirectUrl)) czy cos tam
-            return RequestUtils.buildResponse('Redirected', 302, { Location: redirectUrl, 'x-azaas-token': jwt });
+            return RequestUtils.buildResponseWithBody({
+                location: redirectUrl,
+                token: jwt,
+            });
         }
         throw new BadRequest('Provided return URL is not allowed.');
     } catch (e) {
