@@ -31,6 +31,8 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
         }
 
         const client = RequestUtils.bindClient(event);
+        const queryParams = RequestUtils.extractQueryStringParameters(event, ['returnUrl'], false);
+        const redirectUrl = queryParams.get('returnUrl');
 
         const item = RequestUtils.parse(event.body, CredentialsRequestDto, false);
         if (item.username === null || item.password === null) {
@@ -38,9 +40,16 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
         }
 
         const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password, item.token);
-        return RequestUtils.buildResponseWithBody({
-            token: jwt,
-        });
+
+        if (!redirectUrl) {
+            return RequestUtils.buildResponseWithBody({
+                token: jwt,
+            });
+        } else if (redirectUrl) {
+            // Tutaj zamisat if (redirectUrl) to if (isAllowed(redirectUrl)) czy cos tam
+            return RequestUtils.buildResponse('Redirected', 302, { Location: redirectUrl, 'x-azaas-token': jwt });
+        }
+        throw new BadRequest('Provided return URL is not allowed.');
     } catch (e) {
         return RequestUtils.handleError(e);
     }
