@@ -15,10 +15,10 @@ export class RequestUtils {
     public static CLIENT = 'client';
     public static ID = 'entity';
 
-    static buildResponse(message: string, statusCode = 200): APIGatewayProxyResult {
+    static buildResponse(message: string, statusCode = 200, additionalHeaders: object = {}): APIGatewayProxyResult {
         return {
             statusCode: statusCode,
-            headers: RESPONSE_HEADERS,
+            headers: { ...additionalHeaders, ...RESPONSE_HEADERS },
             body: JSON.stringify({
                 statusCode: statusCode,
                 message: message,
@@ -27,10 +27,15 @@ export class RequestUtils {
         };
     }
 
-    static buildResponseWithBody(responseBody: {}, message?: string, statusCode = 200): APIGatewayProxyResult {
+    static buildResponseWithBody(
+        responseBody: {},
+        message?: string,
+        statusCode = 200,
+        additionalHeaders: object = {},
+    ): APIGatewayProxyResult {
         return {
             statusCode: statusCode,
-            headers: RESPONSE_HEADERS,
+            headers: { ...additionalHeaders, ...RESPONSE_HEADERS },
             body: JSON.stringify({
                 statusCode: statusCode,
                 message: message,
@@ -52,16 +57,22 @@ export class RequestUtils {
         };
     }
 
-    static extractQueryStringParameters(event: APIGatewayProxyEvent, names: Array<string>): Map<string, string> {
+    static extractQueryStringParameters(
+        event: APIGatewayProxyEvent,
+        names: Array<string>,
+        strict = true,
+    ): Map<string, string> {
         const parameters = new Map<string, string>();
 
         names.forEach(it => {
             if (event.queryStringParameters === null) {
-                throw new BadRequest('no query parameters passed');
+                if (strict) {
+                    throw new BadRequest('no query parameters passed');
+                }
             } else {
                 if (event.queryStringParameters[it]) {
                     parameters.set(it, event.queryStringParameters[it]);
-                } else {
+                } else if (strict) {
                     throw new BadRequest(`parameter ${it} is required`);
                 }
             }
