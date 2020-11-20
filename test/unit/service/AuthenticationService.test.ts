@@ -122,8 +122,8 @@ test('authentication service correctly verifies user permissions', async () => {
     userService.getByUsername = async (_client, _username): Promise<User> => user;
     userService.getByKey = async (_client, _username): Promise<User> => user;
 
-    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
-    const result = await authenticationService.checkPermissionsForUser(token, ['test_permission']);
+    const token = await authenticationService.generateTokenForUser('someClient', user.username, PASSWORD);
+    const result = await authenticationService.checkPermissionsForUser('someClient', token, ['test_permission']);
 
     expect(result).toEqual(false);
 });
@@ -151,12 +151,14 @@ test('authentication service correctly invalidates user token', async () => {
         }
     };
 
-    const token = await authenticationService.generateTokenForUser(user.client, user.username, PASSWORD);
-    const result = authenticationService.checkPermissionsForUser(token, ['test_permission']);
+    const token = await authenticationService.generateTokenForUser('someClient', user.username, PASSWORD);
+    const result = authenticationService.checkPermissionsForUser('someClient', token, ['test_permission']);
     await expect(result).resolves.toEqual(false);
 
     await authenticationService.invalidateToken(token);
-    const resultAfterInvalidation = authenticationService.checkPermissionsForUser(token, ['test_permission']);
+    const resultAfterInvalidation = authenticationService.checkPermissionsForUser(user.client, token, [
+        'test_permission',
+    ]);
     await expect(resultAfterInvalidation).rejects.toEqual(
         new JsonWebTokenError('Invalid Json Web Token. Authorization not given.'),
     );

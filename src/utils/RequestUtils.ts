@@ -122,4 +122,11 @@ export class RequestUtils {
         }
         return headers['Authorization'].split(' ')[1];
     }
+
+    static extractClientFromHeader(headers: { [p: string]: string }): string {
+        if (headers['x-azaas-client'] == null || headers['x-azaas-client'] == undefined) {
+            throw new Unauthorized("Missing 'x-azaas-client' header.");
+        }
+        return headers['x-azaas-client'];
+    }
 }

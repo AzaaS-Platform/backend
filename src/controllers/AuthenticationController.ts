@@ -30,7 +30,7 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
             throw new BadRequest(BODY_CANNOT_BE_BLANK_ERROR);
         }
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const queryParams = RequestUtils.extractQueryStringParameters(event, ['returnUrl'], false);
         const redirectUrl = queryParams.get('returnUrl');
 
@@ -75,9 +75,11 @@ export const authorize: APIGatewayProxyHandler = async (event, _context): Promis
         }
 
         const token = RequestUtils.extractJWTFromHeader(event.headers);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         const authorizeRequest = RequestUtils.parse(event.body, AuthorizeRequestDto);
         const userHasPermissions = await authenticationService.checkPermissionsForUser(
+            client,
             token,
             authorizeRequest.requiredPermissions ?? [],
         );

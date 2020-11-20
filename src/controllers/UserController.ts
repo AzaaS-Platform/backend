@@ -39,7 +39,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
@@ -59,7 +59,7 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
@@ -78,7 +78,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(client, jwt, userService, async () => {
@@ -106,7 +106,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
@@ -142,7 +142,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
@@ -162,7 +162,7 @@ export const add2FA: APIGatewayProxyHandler = async (event, _context): Promise<A
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
@@ -189,7 +189,7 @@ export const check2FA: APIGatewayProxyHandler = async (event, _context): Promise
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
@@ -214,7 +214,7 @@ export const remove2FA: APIGatewayProxyHandler = async (event, _context): Promis
         const userService = new UserService(databaseAccessor, groupService);
         const authenticationService = new AuthenticationService(userService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
         const id = RequestUtils.bindId(event);
         const jwt = RequestUtils.extractJWTFromHeader(event.headers);
 
