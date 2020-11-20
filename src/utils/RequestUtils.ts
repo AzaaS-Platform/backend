@@ -8,7 +8,6 @@ const RESPONSE_HEADERS = {
     'Access-Control-Allow-Method': '*',
     'Access-Control-Allow-Credentials': true,
     'Access-Control-Allow-Headers': '*',
-    'Access-Control-Request-Headers': 'x-azaas-client',
     'Content-Type': 'application/json',
 };
 
