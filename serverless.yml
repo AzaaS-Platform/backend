@@ -25,6 +25,7 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: eu-central-1
+  memorySize: 256
   timeout: 15
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
