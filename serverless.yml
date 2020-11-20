@@ -51,7 +51,7 @@ functions:
     events:
       - http:
           method: get
-          path: clients/{client}/groups/{entity}
+          path: groups/{entity}
           cors: true
           request:
             parameters:
@@ -63,7 +63,7 @@ functions:
     events:
       - http:
           method: get
-          path: clients/{client}/groups
+          path: groups
           cors: true
           request:
             parameters:
@@ -74,7 +74,7 @@ functions:
     events:
       - http:
           method: post
-          path: clients/{client}/groups
+          path: groups
           cors: true
           request:
             parameters:
@@ -85,7 +85,7 @@ functions:
     events:
       - http:
           method: put
-          path: clients/{client}/groups/{entity}
+          path: groups/{entity}
           cors: true
           request:
             parameters:
@@ -97,7 +97,7 @@ functions:
     events:
       - http:
           method: delete
-          path: clients/{client}/groups/{entity}
+          path: groups/{entity}
           cors: true
           request:
             parameters:
@@ -110,7 +110,7 @@ functions:
     events:
       - http:
           method: get
-          path: clients/{client}/users/{entity}
+          path: users/{entity}
           cors: true
           request:
             parameters:
@@ -122,7 +122,7 @@ functions:
     events:
       - http:
           method: get
-          path: clients/{client}/users
+          path: users
           cors: true
           request:
             parameters:
@@ -133,7 +133,7 @@ functions:
     events:
       - http:
           method: post
-          path: clients/{client}/users
+          path: users
           cors: true
           request:
             parameters:
@@ -144,7 +144,7 @@ functions:
     events:
       - http:
           method: put
-          path: clients/{client}/users/{entity}
+          path: users/{entity}
           cors: true
           request:
             parameters:
@@ -156,7 +156,7 @@ functions:
     events:
       - http:
           method: delete
-          path: clients/{client}/users/{entity}
+          path: users/{entity}
           cors: true
           request:
             parameters:
@@ -168,7 +168,7 @@ functions:
     events:
       - http:
           method: post
-          path: clients/{client}/users/{entity}/mfa
+          path: users/{entity}/mfa
           cors: true
           request:
             parameters:
@@ -180,7 +180,7 @@ functions:
     events:
       - http:
           method: get
-          path: clients/{client}/users/{entity}/mfa
+          path: users/{entity}/mfa
           cors: true
           request:
             parameters:
@@ -192,7 +192,7 @@ functions:
     events:
       - http:
           method: delete
-          path: clients/{client}/users/{entity}/mfa
+          path: users/{entity}/mfa
           cors: true
           request:
             parameters:
@@ -204,7 +204,7 @@ functions:
     events:
       - http:
           method: post
-          path: clients/{client}/token
+          path: token
           cors: true
           request:
             parameters:

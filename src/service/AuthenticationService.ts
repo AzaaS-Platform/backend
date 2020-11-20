@@ -52,12 +52,21 @@ export class AuthenticationService {
 
     /**
      * Checks permissions for a user based on Json Web Token.
+     * @param client
      * @param token Json Web Token
      * @param permissionsRequired permissions to be queried against
      * @return true if user has all required permissions, false otherwise
      */
-    public async checkPermissionsForUser(token: string, permissionsRequired: Array<string>): Promise<boolean> {
+    public async checkPermissionsForUser(
+        client: string | null,
+        token: string,
+        permissionsRequired: Array<string>,
+    ): Promise<boolean> {
         try {
+            const clientFromToken = this.getClientFromToken(token);
+            if (client == null || clientFromToken !== client) {
+                throw new JsonWebTokenError("JWT doesn't belong to this client.");
+            }
             const user = await this.getUserFromToken(token);
             jwt.verify(token, user.JWTSecret as string);
 
@@ -138,6 +147,11 @@ export class AuthenticationService {
             throw new JsonWebTokenError(this.INVALID_JSON_WEB_TOKEN);
         }
         return user;
+    }
+
+    private getClientFromToken(token: string): string {
+        const payload = JWTPayloadFactory.fromToken(token);
+        return payload.clt;
     }
 
     private handleAuthorizationError(error: Error): never {

@@ -22,7 +22,7 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(
             client,
@@ -56,7 +56,7 @@ export const getAll: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(
             client,
@@ -79,7 +79,7 @@ export const add: APIGatewayProxyHandler = async (event, _context): Promise<APIG
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(
             client,
@@ -112,7 +112,7 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(
             client,
@@ -147,7 +147,7 @@ export const remove: APIGatewayProxyHandler = async (event, _context): Promise<A
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
 
-        const client = RequestUtils.bindClient(event);
+        const client = RequestUtils.extractClientFromHeader(event.headers);
 
         return await PermissionsUtils.requireAdminPermissions(
             client,
