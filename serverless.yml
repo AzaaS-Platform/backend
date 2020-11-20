@@ -52,7 +52,16 @@ functions:
       - http:
           method: get
           path: groups/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -64,7 +73,16 @@ functions:
       - http:
           method: get
           path: groups
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -75,7 +93,16 @@ functions:
       - http:
           method: post
           path: groups
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -86,7 +113,16 @@ functions:
       - http:
           method: put
           path: groups/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -98,7 +134,16 @@ functions:
       - http:
           method: delete
           path: groups/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -111,7 +156,16 @@ functions:
       - http:
           method: get
           path: users/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -123,7 +177,16 @@ functions:
       - http:
           method: get
           path: users
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -134,7 +197,16 @@ functions:
       - http:
           method: post
           path: users
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -145,7 +217,16 @@ functions:
       - http:
           method: put
           path: users/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -157,7 +238,16 @@ functions:
       - http:
           method: delete
           path: users/{entity}
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -169,7 +259,16 @@ functions:
       - http:
           method: post
           path: users/{entity}/mfa
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -181,7 +280,16 @@ functions:
       - http:
           method: get
           path: users/{entity}/mfa
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -193,7 +301,16 @@ functions:
       - http:
           method: delete
           path: users/{entity}/mfa
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -205,7 +322,16 @@ functions:
       - http:
           method: post
           path: token
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
           request:
             parameters:
               paths:
@@ -216,28 +342,64 @@ functions:
       - http:
           method: post
           path: authorize
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
   invalidateToken:
     handler: src/controllers/AuthenticationController.invalidate
     events:
       - http:
           method: get
           path: token/invalidate
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
   refreshToken:
     handler: src/controllers/AuthenticationController.refresh
     events:
       - http:
           method: get
           path: token
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
   registerClient:
     handler: src/controllers/ClientController.register
     events:
       - http:
           method: post
           path: clients
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
 
 resources:
   Resources:
