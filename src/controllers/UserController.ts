@@ -45,6 +45,9 @@ export const get: APIGatewayProxyHandler = async (event, _context): Promise<APIG
 
         return await PermissionsUtils.requireAdminPermissionsOrUserHimself(client, jwt, id, userService, async () => {
             const user = await userService.getByKey(client, id);
+            if (user === null) {
+                throw new NotFound(USER_NOT_FOUND);
+            }
             const responseBody = UserFactory.toResponse(user);
             return RequestUtils.buildResponseWithBody(responseBody);
         });
