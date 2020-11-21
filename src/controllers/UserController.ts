@@ -11,6 +11,7 @@ import { PasswordUtils } from '../utils/PasswordUtils';
 import { NotFound } from '../error/NotFound';
 import * as qrcode from 'qrcode';
 import { AuthenticationService } from '../service/AuthenticationService';
+import { Forbidden } from '../error/Forbidden';
 
 const NO_CONTENT = 'No content.';
 const CREATED = 'Created';
@@ -20,6 +21,7 @@ const GROUP_NOT_FOUND = 'Group was not found.';
 const TWO_FACTOR_AUTH_LABEL = 'AzaaS Platform';
 const TWO_FACTOR_AUTH_ADDED = 'Two-factor authentication added to the account.';
 const TWO_FACTOR_AUTH_REMOVED = 'Two-factor authentication removed from the account.';
+const FORBIDDEN_ADMIN = 'Forbidden. Only administrators are allowed to access the configuration.';
 
 const validateGroups = async (
     client: string,
@@ -121,6 +123,9 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
             const user = await userService.getByKey(client, id);
             if (user === null) {
                 throw new NotFound(USER_NOT_FOUND);
+            }
+            if (!user.isAdmin && item.groups && item.groups.length > 0) {
+                throw new Forbidden(FORBIDDEN_ADMIN);
             }
             if (!(await validateGroups(client, item.groups, groupService))) {
                 throw new NotFound(GROUP_NOT_FOUND);
