@@ -400,12 +400,27 @@ functions:
               - X-Amz-Security-Token
               - X-Api-Key
               - X-Amz-Date
-
   putAllowedUrls:
     handler: src/controllers/ClientController.putAllowedUrls
     events:
       - http:
           method: put
+          path: allowedUrls
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - x-azaas-client
+              - Authorization
+              - X-Amz-User-Agent
+              - X-Amz-Security-Token
+              - X-Api-Key
+              - X-Amz-Date
+  getAllowedUrls:
+    handler: src/controllers/ClientController.getAllowedUrls
+    events:
+      - http:
+          method: get
           path: allowedUrls
           cors:
             origin: '*'
