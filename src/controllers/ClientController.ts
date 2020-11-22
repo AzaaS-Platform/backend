@@ -98,3 +98,24 @@ export const putAllowedUrls: APIGatewayProxyHandler = async (event, _context): P
         return RequestUtils.handleError(e);
     }
 };
+
+export const getAllowedUrls: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
+    try {
+        const databaseAccessor = new DatabaseAccessor();
+        const groupService = new GroupService(databaseAccessor);
+        const userService = new UserService(databaseAccessor, groupService);
+        const clientService = new ClientService(databaseAccessor);
+
+        const clientId = RequestUtils.extractClientFromHeader(event.headers);
+        const client = await clientService.getByKey(clientId);
+        const jwt = RequestUtils.extractJWTFromHeader(event.headers);
+
+        if (client === null) throw new BadRequest(CLIENT_DOES_NOT_EXIST);
+
+        return await PermissionsUtils.requireAdminPermissions(clientId, jwt, userService, async () => {
+            return RequestUtils.buildResponseWithBody(client.allowedUrls);
+        });
+    } catch (e) {
+        return RequestUtils.handleError(e);
+    }
+};
