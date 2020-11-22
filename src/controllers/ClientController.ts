@@ -18,6 +18,7 @@ const CLIENT_ALREADY_EXIST = 'Client with this name already exists. Please choos
 const CLIENT_DOES_NOT_EXIST = 'Client does not exist.';
 const BAD_LENGTH_CLIENT_NAME = 'Incorrect length of Client name. Max length is ' + NAME_LENGTH_LIMIT;
 const BAD_CHARACTER_CLIENT_NAME = 'Incorrect Client name. The name can only contain lowercase letters.';
+const NO_HTTP = 'All allowed origins must be https';
 const NO_CONTENT = 'No content.';
 
 export const register: APIGatewayProxyHandler = async (event, _context): Promise<APIGatewayProxyResult> => {
@@ -85,7 +86,9 @@ export const putAllowedUrls: APIGatewayProxyHandler = async (event, _context): P
             const allowedUrls = item['allowedUrls'] as Array<string>;
 
             if (allowedUrls) {
-                client.allowedUrls = allowedUrls;
+                if (allowedUrls.some(it => it.indexOf('https://') !== 0)) throw new BadRequest(NO_HTTP);
+
+                if (allowedUrls) client.allowedUrls = allowedUrls;
                 await clientService.modify(client);
             }
 
