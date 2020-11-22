@@ -8,6 +8,7 @@ import { CredentialsRequestDto } from '../model/dto/request/CredentialsRequestDt
 import { BadRequest } from '../error/BadRequest';
 import { AuthorizeRequestDto } from '../model/dto/request/AuthorizeRequestDto';
 import { Forbidden } from '../error/Forbidden';
+import { ClientService } from '../service/ClientService';
 
 const BODY_CANNOT_BE_BLANK_ERROR = 'Request body cannot be blank.';
 const MISSING_CREDENTIALS_ERROR = 'Missing credentials.';
@@ -24,29 +25,35 @@ export const authenticate: APIGatewayProxyHandler = async (event, _context): Pro
         const databaseAccessor = new DatabaseAccessor();
         const groupService = new GroupService(databaseAccessor);
         const userService = new UserService(databaseAccessor, groupService);
+        const clientService = new ClientService(databaseAccessor);
         const authenticationService = new AuthenticationService(userService);
 
         if (event.body === null) {
             throw new BadRequest(BODY_CANNOT_BE_BLANK_ERROR);
         }
 
-        const client = RequestUtils.extractClientFromHeader(event.headers);
+        const clientId = RequestUtils.extractClientFromHeader(event.headers);
         const queryParams = RequestUtils.extractQueryStringParameters(event, ['returnUrl'], false);
         const redirectUrl = queryParams.get('returnUrl');
+        const client = await clientService.getByKey(clientId);
 
         const item = RequestUtils.parse(event.body, CredentialsRequestDto, false);
         if (item.username === null || item.password === null) {
             throw new BadRequest(MISSING_CREDENTIALS_ERROR);
         }
 
-        const jwt = await authenticationService.generateTokenForUser(client, item.username, item.password, item.token);
+        const jwt = await authenticationService.generateTokenForUser(
+            clientId,
+            item.username,
+            item.password,
+            item.token,
+        );
 
         if (!redirectUrl) {
             return RequestUtils.buildResponseWithBody({
                 token: jwt,
             });
-        } else if (redirectUrl) {
-            // Tutaj zamisat if (redirectUrl) to if (isAllowed(redirectUrl)) czy cos tam
+        } else if (client?.isUrlAllowed(redirectUrl)) {
             return RequestUtils.buildResponseWithBody({
                 location: redirectUrl,
                 token: jwt,
