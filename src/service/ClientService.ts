@@ -12,12 +12,11 @@ export class ClientService extends EntityService {
         super(databaseAccessor);
     }
 
-    async getByKey(client: string, key: string = client): Promise<Entity | null> {
+    async getByKey(client: string, key: string = client): Promise<Client | null> {
         const item = await this.databaseAccessor.getItemByKeys(client, key, DbMappingConstants.CLIENT_TYPE);
 
         if (item != null) {
-            const clientEntity = ClientFactory.fromDbItem(item);
-            return clientEntity;
+            return ClientFactory.fromDbItem(item);
         } else {
             return null;
         }
@@ -33,10 +32,6 @@ export class ClientService extends EntityService {
         }
         await super.add(entity);
         return entity;
-    }
-
-    async modify(entity: Entity): Promise<void> {
-        return super.modify(entity);
     }
 
     async delete(client: string): Promise<void> {

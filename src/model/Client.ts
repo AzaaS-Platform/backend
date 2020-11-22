@@ -7,10 +7,12 @@ import { DbMappingConstants as DB } from '../database/DbMappingConstants';
  */
 export class Client extends Entity {
     adminUsers: Array<string>;
+    allowedUrls: Array<string>;
 
-    constructor(clientId: string, adminUsers: Array<string>) {
-        super(clientId, clientId);
+    constructor(clientId: string, entity: string, adminUsers: Array<string>, allowedUrls: Array<string>) {
+        super(clientId, entity);
         this.adminUsers = adminUsers;
+        this.allowedUrls = allowedUrls;
     }
 
     toDbItem(): DbItem {
@@ -21,6 +23,14 @@ export class Client extends Entity {
         if (this.adminUsers.length > 0) {
             mapping[DB.ADMIN_USERS] = this.adminUsers;
         }
+        if (this.allowedUrls.length > 0) {
+            mapping[DB.ALLOWED_URLS] = this.allowedUrls;
+        }
         return new DbItem(mapping);
+    }
+
+    isUrlAllowed(url: string): boolean {
+        // allow if any allowedUrl is a substring of redirectUrl
+        return this.allowedUrls.some(it => url.lastIndexOf(it) > -1);
     }
 }
