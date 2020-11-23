@@ -17,6 +17,7 @@ export class DbMappingConstants {
     public static MFA_SECRET = 'mfaSecret';
 
     public static ADMIN_USERS = 'adminUsers';
+    public static ALLOWED_URLS = 'allowedUrls';
 
     // schema constants
 
