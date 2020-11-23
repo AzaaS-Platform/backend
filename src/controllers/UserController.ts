@@ -124,7 +124,11 @@ export const modify: APIGatewayProxyHandler = async (event, _context): Promise<A
             if (user === null) {
                 throw new NotFound(USER_NOT_FOUND);
             }
-            if (!user.isAdmin && item.groups && item.groups.length > 0) {
+            if (
+                item.groups &&
+                item.groups.length > 0 &&
+                !(await PermissionsUtils.checkAdminPermissions(client, jwt, userService))
+            ) {
                 throw new Forbidden(FORBIDDEN_ADMIN);
             }
             if (!(await validateGroups(client, item.groups, groupService))) {

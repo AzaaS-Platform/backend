@@ -57,7 +57,7 @@ export class PermissionsUtils {
     /**
      * Unfortunately it's basically just a copy of AuthenticationService.authorize method.
      */
-    private static async checkAdminPermissions(
+    public static async checkAdminPermissions(
         client: string,
         token: string,
         userService: UserService,
