@@ -46,6 +46,16 @@ provider:
       Resource: "*"
 
 functions:
+  my-function:
+    handler: lib/app.handler
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
   groupGet:
     handler: src/controllers/GroupController.get
     events:
