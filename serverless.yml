@@ -48,6 +48,14 @@ provider:
 functions:
   groupGet:
     handler: src/controllers/GroupController.get
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -69,6 +77,14 @@ functions:
                 entity: true
   groupGetAll:
     handler: src/controllers/GroupController.getAll
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -89,6 +105,14 @@ functions:
                 client: true
   groupAdd:
     handler: src/controllers/GroupController.add
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -109,6 +133,14 @@ functions:
                 client: true
   groupModify:
     handler: src/controllers/GroupController.modify
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: put
@@ -130,6 +162,14 @@ functions:
                 entity: true
   groupRemove:
     handler: src/controllers/GroupController.remove
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: delete
@@ -152,6 +192,14 @@ functions:
 
   userGet:
     handler: src/controllers/UserController.get
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -173,6 +221,14 @@ functions:
                 entity: true
   userGetAll:
     handler: src/controllers/UserController.getAll
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -193,6 +249,14 @@ functions:
                 client: true
   userAdd:
     handler: src/controllers/UserController.add
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -213,6 +277,14 @@ functions:
                 client: true
   userModify:
     handler: src/controllers/UserController.modify
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: put
@@ -234,6 +306,14 @@ functions:
                 entity: true
   userRemove:
     handler: src/controllers/UserController.remove
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: delete
@@ -255,6 +335,14 @@ functions:
                 entity: true
   add2FA:
     handler: src/controllers/UserController.add2FA
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -276,6 +364,14 @@ functions:
                 entity: true
   check2FA:
     handler: src/controllers/UserController.check2FA
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -297,6 +393,14 @@ functions:
                 entity: true
   remove2FA:
     handler: src/controllers/UserController.remove2FA
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: delete
@@ -318,6 +422,14 @@ functions:
                 entity: true
   getToken:
     handler: src/controllers/AuthenticationController.authenticate
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -338,6 +450,14 @@ functions:
                 client: true
   authorize:
     handler: src/controllers/AuthenticationController.authorize
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -354,6 +474,14 @@ functions:
               - X-Amz-Date
   invalidateToken:
     handler: src/controllers/AuthenticationController.invalidate
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -370,6 +498,14 @@ functions:
               - X-Amz-Date
   refreshToken:
     handler: src/controllers/AuthenticationController.refresh
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
@@ -386,6 +522,14 @@ functions:
               - X-Amz-Date
   registerClient:
     handler: src/controllers/ClientController.register
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: post
@@ -402,6 +546,14 @@ functions:
               - X-Amz-Date
   putAllowedUrls:
     handler: src/controllers/ClientController.putAllowedUrls
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: put
@@ -418,6 +570,14 @@ functions:
               - X-Amz-Date
   getAllowedUrls:
     handler: src/controllers/ClientController.getAllowedUrls
+    layers:
+      - arn:aws:lambda:eu-central-1:725887861453:layer:Dynatrace_OneAgent_1_207_7_20201201-132813_nodejs:1
+    environment:
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+      DT_TENANT: yuh86895
+      DT_CLUSTER_ID: 1889348772
+      DT_CONNECTION_BASE_URL: https://yuh86895.live.dynatrace.com
+      DT_CONNECTION_AUTH_TOKEN: dt0a01.yuh86895.91889e65ad5fd4703f5b1409ac2679a8189731d05b012c3d8d2282ca165c8edc
     events:
       - http:
           method: get
